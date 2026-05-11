@@ -21,6 +21,11 @@ dependencies:
   go_router: ^17.0.1
   intl: ^0.20.2
   gap: ^3.0.1
+  uuid: ^4.5.2
+  supabase_flutter: ^2.12.0
+ 
+
+
 
 
 
