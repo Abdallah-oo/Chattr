@@ -1,0 +1,49 @@
+name: messenger_clone0
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.3
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+ 
+  cupertino_icons: ^1.0.8
+  auto_size_text: ^3.0.0
+  cached_network_image: ^3.4.1
+  go_router: ^17.0.1
+  intl: ^0.20.2
+  gap: ^3.0.1
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^6.0.0
+
+
+flutter:
+
+
+  uses-material-design: true
+
+  assets:
+    - assets/svgs/ 
+
+
+  fonts:
+    - family: PrimaryFont
+      fonts:
+        - asset: assets/fonts/TenorSans-Regular.ttf
+
