@@ -5,10 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:messenger_clone0/core/cubits/pick_image/pick_image_cubit.dart';
 import 'package:messenger_clone0/core/themes/app_colors.dart';
 import 'package:messenger_clone0/core/widgets/image/image_source_bottom.dart';
-
 const _kAvatarRadius = 45.0;
 const _kFallbackAvatarUrl =
-    'https://previews.123rf.com/images/tuktukdesign/tuktukdesign1606/tuktukdesign160600119/59070200-user-icon-man-profile-businessman-avatar-person-icon-in-vector-illustration.avif';
+    'https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/default-avatar-profile-picture-male-icon.png';
 
 class PickImageWidget extends StatelessWidget {
   const PickImageWidget({
@@ -107,6 +106,7 @@ class _NetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("network is working right ");
     return CachedNetworkImage(
       imageUrl: imageUrl,
       fit: BoxFit.cover,
