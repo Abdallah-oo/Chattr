@@ -38,7 +38,7 @@ class CustomButton extends StatelessWidget {
         }),
 
         padding: WidgetStateProperty.all(
-          padding ?? EdgeInsets.symmetric(vertical: 10),
+          padding ?? EdgeInsets.symmetric(vertical: 12),
         ),
 
         shape: WidgetStateProperty.all(
