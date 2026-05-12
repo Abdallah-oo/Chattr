@@ -1,6 +1,4 @@
-
-
-
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:messenger_clone0/features/auth/data/repos/auth_repo.dart';
 
@@ -38,6 +36,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String name,
     required String email,
     required String password,
+    required File image,
   }) async {
     if (state.status == AuthStatus.loading) return;
 
@@ -49,6 +48,7 @@ class AuthCubit extends Cubit<AuthState> {
       name: name,
       email: email,
       password: password,
+      image: image,
     );
     user.fold(
       (error) => emit(
