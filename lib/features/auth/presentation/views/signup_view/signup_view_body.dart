@@ -175,7 +175,7 @@ class _SignupButton extends StatelessWidget {
         return CustomButton(
           onPressed: isLoading ? null : () => _signup(context),
 
-          raduis: 8,
+          raduis: 15,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

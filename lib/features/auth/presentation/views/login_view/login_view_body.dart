@@ -149,9 +149,10 @@ class _LoginButton extends StatelessWidget {
             state.status == AuthStatus.loading &&
             state.action == AuthAction.login;
         return CustomButton(
+      
           onPressed: isLoading ? null : () => _login(context),
 
-          raduis: 8,
+          raduis: 15,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
