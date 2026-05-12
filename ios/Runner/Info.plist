@@ -6,6 +6,10 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>نحتاج صلاحية لحفظ الصور</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>نحتاج صلاحية للوصول إلى الصور</string>
 	<key>CFBundleDisplayName</key>
 	<string>Messenger Clone0</string>
 	<key>CFBundleExecutable</key>
