@@ -3,67 +3,93 @@ description: "A new Flutter project."
 
 publish_to: 'none'
 
-
 version: 1.0.0+1
 
 environment:
   sdk: ^3.11.3
 
-
 dependencies:
   flutter:
     sdk: flutter
 
- 
+  # iOS-style icons provided by Flutter
   cupertino_icons: ^1.0.8
+
+  # Automatically adjusts text size to fit available space
   auto_size_text: ^3.0.0
+
+  # Loads and caches network images for better performance
   cached_network_image: ^3.4.1
+
+  # App navigation and route management
   go_router: ^17.0.1
+
+  # Date, number, and localization formatting
   intl: ^0.20.2
+
+  # Simple spacing widget (alternative to SizedBox)
   gap: ^3.0.1
+
+  # Generates unique IDs (e.g. messages, users)
   uuid: ^4.5.2
+
+  # Supabase integration (Auth, Database, Storage)
   supabase_flutter: ^2.12.0
+
+  # Functional programming utilities (e.g. Either)
   dartz: ^0.10.1
+
+  # State management using BLoC/Cubit
   flutter_bloc: ^9.1.1
+
+  # Lightweight local NoSQL database
   hive: ^2.2.3
+
+  # Flutter support for Hive
   hive_flutter: ^1.1.0
+
+  # Renders SVG images
   flutter_svg: ^2.2.1
+
+  # Saves images/videos to device gallery
   gal: ^2.3.0
+
+  # Picks images from gallery or camera
   image_picker: ^1.2.1
+
+  # Handles runtime permissions
   permission_handler: ^12.0.1
+
+  # Provides access to device file system paths
   path_provider: ^2.1.2
+
+  # Crops images before uploading/using
   image_cropper: ^11.0.0
 
-
- 
-
-
-
-
-
+  # Dependency injection / service locator
+  get_it: ^9.2.1
 
 dev_dependencies:
+  # Generates Hive adapter files
   hive_generator: ^2.0.1
+
+  # Runs code generation tools
   build_runner: ^2.4.6
+
+  # Recommended lint rules for clean code
   flutter_lints: ^6.0.0
+
+  # Flutter testing framework
   flutter_test:
     sdk: flutter
 
-
- 
-
-
 flutter:
-
-
   uses-material-design: true
 
   assets:
-    - assets/svgs/ 
-
+    - assets/svgs/
 
   fonts:
     - family: PrimaryFont
       fonts:
         - asset: assets/fonts/TenorSans-Regular.ttf
-
