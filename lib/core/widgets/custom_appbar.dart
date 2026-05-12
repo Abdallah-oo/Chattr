@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:messenger_clone0/core/themes/app_colors.dart';
+import 'package:messenger_clone0/core/themes/app_text_styles.dart';
 import 'package:messenger_clone0/core/widgets/custom_text.dart';
 
 
@@ -22,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.groundColor,
+      backgroundColor: AppColors.surface,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       elevation: 0,
       scrolledUnderElevation: 0,
@@ -31,13 +32,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions:
           actions ??
           [
-            Icon(Icons.more_horiz_rounded, color: AppColors.titleColor),
+            Icon(Icons.more_horiz_rounded, color: Colors.grey),
             Gap(15),
           ],
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(text: title, size: 17),
+          CustomText(text: title, style: AppTextStyles.headlineSmall,),
           ...(titleItems ?? []),
         ],
       ),

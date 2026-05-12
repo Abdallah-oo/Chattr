@@ -32,9 +32,9 @@ class CustomButton extends StatelessWidget {
 
         backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
           if (states.contains(WidgetState.disabled)) {
-            return color ?? AppColors.primaryButton;
+            return color ?? AppColors.primary;
           }
-          return color ?? AppColors.primaryButton;
+          return color ?? AppColors.primary;
         }),
 
         padding: WidgetStateProperty.all(
