@@ -25,6 +25,7 @@ abstract class AppColors {
   // ===================== Status =====================
 
   static const Color error = Color(0xFFCE1E12);
+  
 
   // ===================== Shadows =====================
 
