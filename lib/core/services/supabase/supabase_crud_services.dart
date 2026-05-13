@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
@@ -6,9 +5,11 @@ import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseCrudServices {
-  final _client = SupabaseClientManager.client;
+  final SupabaseClientManager _clientManager;
 
-  SupabaseCrudServices();
+  SupabaseCrudServices(this._clientManager);
+
+  SupabaseClient get _client => _clientManager.client;
 
   // ===================== GET =====================
 
