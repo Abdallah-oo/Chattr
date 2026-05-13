@@ -21,28 +21,32 @@ class FetchContactsCubit extends Cubit<FetchContactsState> {
     try {
       final myId = _auth.currentUser!.id;
 
-      // ===================== LOCAL (Hive) =====================
+      // ===== LOCAL (Hive) =====
       final localResult = await _repo.getUsers();
-
-      final localUsers = localResult.fold(
-        (err) => <UserModel>[],
-        (users) => users,
-      );
+      final localUsers = localResult.fold((e) => <UserModel>[], (u) => u);
 
       final localMe = localUsers.firstWhere(
         (u) => u.id == myId,
         orElse: () => UserModel(id: myId),
       );
 
-      final contactIds = localMe.myContacts ?? [];
+      List<String> contactIds = localMe.myContacts ?? [];
 
-      if (contactIds.isNotEmpty) {
-        contacts = localUsers.where((u) => contactIds.contains(u.id)).toList();
-
-        emit(FetchContactsSuccess(contacts: contacts));
+      if (contactIds.isEmpty) {
+        final remoteMeResult = await _repo.fetchMe(myId);
+        final remoteMe = remoteMeResult.fold((e) => null, (u) => u);
+        if (remoteMe != null) {
+          await _repo.saveUser(remoteMe);
+          contactIds = remoteMe.myContacts ?? [];
+        }
+        if (contactIds.isEmpty) {
+          emit(FetchContactsSuccess(contacts: []));
+          _subscribeToRealtime(myId);
+          return;
+        }
       }
 
-      // ===================== REMOTE (Supabase - OPTIMIZED) =====================
+      // ===== REMOTE (Supabase) =====
       if (contactIds.isEmpty) {
         emit(FetchContactsSuccess(contacts: []));
         _subscribeToRealtime(myId);
@@ -50,19 +54,18 @@ class FetchContactsCubit extends Cubit<FetchContactsState> {
       }
 
       final remoteResult = await _repo.fetchAllContacts(contactIds);
-
       final contactsList = remoteResult.fold(
-        (err) => <UserModel>[],
+        (e) => <UserModel>[],
         (data) => data.map((e) => UserModel.fromJson(e)).toList(),
       );
 
-      await _repo.saveUsers(contactsList);
+      for (final user in contactsList) {
+        await _repo.saveUser(user);
+      }
 
       contacts = contactsList;
-
       emit(FetchContactsSuccess(contacts: contacts));
 
-      // ===================== REALTIME =====================
       _subscribeToRealtime(myId);
     } catch (e) {
       emit(FetchContactsFailure(errorMessage: e.toString()));
@@ -74,7 +77,7 @@ class FetchContactsCubit extends Cubit<FetchContactsState> {
 
     final channelResult = _repo.subscribeToUser(myId);
 
-    channelResult.fold((err) => null, (channel) {
+    channelResult.fold((e) => null, (channel) {
       _channel = channel;
 
       _channel!
@@ -88,19 +91,37 @@ class FetchContactsCubit extends Cubit<FetchContactsState> {
               value: myId,
             ),
             callback: (payload) async {
-              final updatedUser = UserModel.fromJson(payload.newRecord);
+              final updatedMe = UserModel.fromJson(payload.newRecord);
 
-              await _repo.saveUser(updatedUser);
+              await _repo.saveUser(updatedMe);
+
+              final newContactIds = updatedMe.myContacts ?? [];
 
               final allUsersResult = await _repo.getUsers();
-
               final allUsers = allUsersResult.fold(
-                (err) => <UserModel>[],
-                (users) => users,
+                (e) => <UserModel>[],
+                (u) => u,
               );
 
+              final cachedIds = allUsers.map((u) => u.id).toSet();
+              final missingIds = newContactIds
+                  .where((id) => !cachedIds.contains(id))
+                  .toList();
+
+              if (missingIds.isNotEmpty) {
+                final remoteResult = await _repo.fetchAllContacts(missingIds);
+                final fetched = remoteResult.fold(
+                  (e) => <UserModel>[],
+                  (data) => data.map((e) => UserModel.fromJson(e)).toList(),
+                );
+                for (final u in fetched) {
+                  await _repo.saveUser(u);
+                }
+                allUsers.addAll(fetched);
+              }
+
               final newContacts = allUsers
-                  .where((u) => (updatedUser.myContacts ?? []).contains(u.id))
+                  .where((u) => u.id != myId && newContactIds.contains(u.id))
                   .toList();
 
               if (_listsEqual(contacts, newContacts)) return;
@@ -115,11 +136,9 @@ class FetchContactsCubit extends Cubit<FetchContactsState> {
 
   bool _listsEqual(List<UserModel> a, List<UserModel> b) {
     if (a.length != b.length) return false;
-
     for (int i = 0; i < a.length; i++) {
       if (a[i].id != b[i].id) return false;
     }
-
     return true;
   }
 
