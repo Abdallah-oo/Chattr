@@ -66,7 +66,7 @@ class CustomSnackBar {
       message: message,
       customPadding: padding,
       icon: Icons.error_outline_rounded,
-      backgroundColor: AppColors.cancleColor,
+      backgroundColor: AppColors.error,
     );
   }
 

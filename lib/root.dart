@@ -108,7 +108,7 @@ class _ModernNavBar extends StatelessWidget {
                                   : items[index].icon,
                               color: isSelected
                                   ? const Color(0xFF20B812)
-                                  : AppColors.titleColor,
+                                  : Colors.grey,
                               size: 26,
                             ),
                           ],
