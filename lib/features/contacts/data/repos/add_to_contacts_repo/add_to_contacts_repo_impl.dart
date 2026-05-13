@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:messenger_clone0/core/services/hive/hive_services.dart';
 import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
 import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
 import 'package:messenger_clone0/core/services/supabase/supabase_crud_services.dart';
@@ -59,7 +60,7 @@ class AddToContactsRepoImpl implements AddToContactsRepo {
           .from('messenger_users')
           .update({'my_contacts': currentContacts})
           .eq('id', myId);
-
+     await HiveService.saveUser(contact);
       return  Right(contact);
     } catch (e) {
       return left(SupabaseError(message: "$e"));
