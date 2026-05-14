@@ -35,15 +35,15 @@ class UserModel {
 
   UserModel({
     required this.id,
-    required this.name,
+     this.name,
 
-    required this.email,
-    required this.image,
-    required this.about,
-    required this.createdAt,
-    required this.myContacts,
-    required this.lastSeen,
-    required this.isOnLine,
+     this.email,
+     this.image,
+     this.about,
+     this.createdAt,
+     this.myContacts,
+     this.lastSeen,
+     this.isOnLine,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
