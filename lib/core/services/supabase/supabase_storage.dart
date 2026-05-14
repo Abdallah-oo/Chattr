@@ -6,10 +6,12 @@ import 'package:uuid/uuid.dart';
 
 
 class SupabaseStorage {
-  final _client = SupabaseClientManager.client;
+  final SupabaseClientManager _clientManager;
+
+  SupabaseClient get _client => _clientManager.client;
   final String storageFile;
 
-  SupabaseStorage({required this.storageFile});
+  SupabaseStorage({required this.storageFile, required SupabaseClientManager clientManager}) : _clientManager = clientManager;
 
   // ===================== Public APIs =====================
 

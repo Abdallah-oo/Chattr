@@ -1,22 +1,23 @@
-
-
 import 'dart:async';
 import 'dart:io';
 
+import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
 import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
-  final SupabaseClient client;
+  final SupabaseClientManager client;
 
   AuthService(this.client);
+  SupabaseClient get _client => client.client;
 
   Future<User> logIn(String email, String password) async {
     try {
-      final res = await client.auth.signInWithPassword(
+      final res = await _client.auth.signInWithPassword(
         email: email,
         password: password,
       );
+      print(res);
       return res.user!;
     } catch (e) {
       throw _handleError(e);
@@ -25,7 +26,7 @@ class AuthService {
 
   Future<User> signUp(String email, String password) async {
     try {
-      final res = await client.auth.signUp(email: email, password: password);
+      final res = await _client.auth.signUp(email: email, password: password);
       return res.user!;
     } catch (e) {
       throw _handleError(e);
@@ -34,7 +35,7 @@ class AuthService {
 
   Future<void> signOut() async {
     try {
-      await client.auth.signOut();
+      await _client.auth.signOut();
     } catch (e) {
       throw _handleError(e);
     }
@@ -42,13 +43,13 @@ class AuthService {
 
   Future<void> resetPassword(String email) async {
     try {
-      await client.auth.resetPasswordForEmail(email);
+      await _client.auth.resetPasswordForEmail(email);
     } catch (e) {
       throw _handleError(e);
     }
   }
 
-  User? get currentUser => client.auth.currentUser;
+  User? get currentUser => _client.auth.currentUser;
   SupabaseError _handleError(Object e) {
     if (e is AuthException) {
       final msg = e.message.toLowerCase();
