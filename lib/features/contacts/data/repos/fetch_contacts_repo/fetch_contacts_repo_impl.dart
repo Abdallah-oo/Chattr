@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:messenger_clone0/core/services/hive/hive_services.dart';
+import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
 import 'package:messenger_clone0/core/services/supabase/supabase_crud_services.dart';
 import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
 import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
@@ -7,10 +8,10 @@ import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_rep
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FetchContactsRepoImpl implements FetchContactsRepo {
-  final SupabaseClient _client;
+  final SupabaseClientManager client;
   final SupabaseCrudServices _crud;
-  FetchContactsRepoImpl(this._client, this._crud);
-
+  FetchContactsRepoImpl(this.client, this._crud);
+  SupabaseClient get _client => client.client;
   @override
   Future<Either<SupabaseError, List<Map<String, dynamic>>>> fetchAllContacts(
     List<String> ids,
