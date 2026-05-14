@@ -9,44 +9,40 @@ import 'package:messenger_clone0/features/contacts/data/repos/add_to_contacts_re
 import 'package:messenger_clone0/features/contacts/data/repos/add_to_contacts_repo/add_to_contacts_repo_impl.dart';
 import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo.dart';
 import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo_impl.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo_impl.dart';
 
 final getIt = GetIt.instance;
 
 void setUpGetIt() {
-  // Services
-
-
-
-   getIt.registerLazySingleton<SupabaseClientManager>(
+  //client manager
+  getIt.registerLazySingleton<SupabaseClientManager>(
     () => SupabaseClientManager(),
   );
-    getIt.registerLazySingleton<AuthService>(
+  //auth services
+  getIt.registerLazySingleton<AuthService>(
     () => AuthService(getIt<SupabaseClientManager>()),
   );
-
+  //crud services
   getIt.registerLazySingleton<SupabaseCrudServices>(
-    () => SupabaseCrudServices(getIt<SupabaseClientManager>())
+    () => SupabaseCrudServices(getIt<SupabaseClientManager>()),
   );
-
+  //storage services
   getIt.registerLazySingleton<SupabaseStorage>(
-    () => SupabaseStorage(storageFile: "users_image",clientManager: getIt<SupabaseClientManager>() ),
+    () => SupabaseStorage(
+      storageFile: "users_image",
+      clientManager: getIt<SupabaseClientManager>(),
+    ),
   );
-
-  // Repositories
+  // auth repo
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(
       getIt<AuthService>(),
       getIt<SupabaseCrudServices>(),
       getIt<SupabaseStorage>(),
     ),
-
-    
   );
-
-
-
-
-  // Add ToContact
+  // add to contacts repo
   getIt.registerLazySingleton<AddToContactsRepo>(
     () => AddToContactsRepoImpl(
       getIt<SupabaseClientManager>(),
@@ -54,14 +50,18 @@ void setUpGetIt() {
       getIt<SupabaseCrudServices>(),
     ),
   );
-  //Fetch Contacts
-
-    getIt.registerLazySingleton<FetchContactsRepo>(
+  //Fetch Contacts repo
+  getIt.registerLazySingleton<FetchContactsRepo>(
     () => FetchContactsRepoImpl(
       getIt<SupabaseClientManager>(),
       getIt<SupabaseCrudServices>(),
-
     ),
   );
-
+  //add friend repo
+  getIt.registerLazySingleton<AddFriendRepo>(
+    () => AddFriendRepoImpl(
+      getIt<SupabaseCrudServices>(),
+      getIt<SupabaseClientManager>(),
+    ),
+  );
 }
