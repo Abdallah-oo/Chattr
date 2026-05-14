@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messenger_clone0/core/themes/app_colors.dart';
+import 'package:messenger_clone0/core/themes/app_text_styles.dart';
+import 'package:messenger_clone0/core/widgets/custom_text.dart';
 
 class CustomSnackBar {
   static void show(
@@ -8,30 +10,23 @@ class CustomSnackBar {
     IconData? icon,
     EdgeInsetsGeometry? customPadding,
     Color? backgroundColor,
-    Duration duration = const Duration(seconds: 4),
+    Duration duration = const Duration(seconds: 3),
     SnackBarAction? action,
   }) {
-    final SnackBar snackBar = SnackBar(
+    final SnackBar snackBar =
+     SnackBar(
       content: Row(
         children: [
           if (icon != null) Icon(icon, color: Colors.white, size: 22),
           if (icon != null) const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: CustomText(text: message, style: AppTextStyles.bodyMedium),
           ),
         ],
       ),
       backgroundColor: backgroundColor ?? Colors.black87,
       behavior: SnackBarBehavior.floating,
-      margin:
-          customPadding ?? EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: customPadding ?? EdgeInsets.fromLTRB(17, 0, 17, 100),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       duration: duration,
       action: action,
