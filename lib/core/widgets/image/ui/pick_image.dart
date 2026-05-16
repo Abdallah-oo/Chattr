@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:messenger_clone0/core/cubits/pick_image/pick_image_cubit.dart';
 import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/widgets/image/image_source_bottom.dart';
+import 'package:messenger_clone0/core/widgets/image/widgets/image_source_bottom.dart';
 const _kAvatarRadius = 45.0;
 const _kFallbackAvatarUrl =
     'https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/default-avatar-profile-picture-male-icon.png';
