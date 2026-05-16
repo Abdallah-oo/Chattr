@@ -9,8 +9,14 @@ import 'package:messenger_clone0/features/contacts/data/repos/add_to_contacts_re
 import 'package:messenger_clone0/features/contacts/data/repos/add_to_contacts_repo/add_to_contacts_repo_impl.dart';
 import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo.dart';
 import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo_impl.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo_impl.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo/add_friend_repo.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo/add_friend_repo_impl.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo_impl.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo_impl.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo_impl.dart';
 
 final getIt = GetIt.instance;
 
@@ -62,6 +68,24 @@ void setUpGetIt() {
     () => AddFriendRepoImpl(
       getIt<SupabaseCrudServices>(),
       getIt<SupabaseClientManager>(),
+    ),
+  );
+  //fetch private chats repo
+  getIt.registerLazySingleton<FetchPrivateChatRepo>(
+    () => FetchPrivateChatRepoImpl(
+      getIt<AuthService>(),
+      getIt<SupabaseClientManager>(),
+    ),
+  );
+  //fetch private messages repo
+  getIt.registerLazySingleton<FetchPrivateMessagesRepo>(
+    () => FetchPrivateMessagesRepoImpl(getIt<SupabaseClientManager>()),
+  );
+  //send private message repo
+  getIt.registerLazySingleton<SendPrivateMessageRepo>(
+    () => SendPrivateMessageRepoImpl(
+      crud: getIt<SupabaseCrudServices>(),
+      storage: getIt<SupabaseStorage>(),
     ),
   );
 }
