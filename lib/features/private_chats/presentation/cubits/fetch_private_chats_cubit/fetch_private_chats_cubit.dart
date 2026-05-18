@@ -34,14 +34,27 @@ class FetchPrivateChatsCubit extends Cubit<FetchPrivateChatsState> {
   // ─────────────────────────────────────────────────────────────────
 
   Future<void> fetchPrivateChats() async {
+      if (privateChatsCache.isNotEmpty) {
+      emit(FetchPrivateChatsSuccess(chats: List.from(privateChatsCache)));
+      // خليه يحدّث في الخلفية من غير loading
+      await _fetchFromServer();
+      return;
+    }
     try {
       emit(FetchPrivateChatsloading());
 
-      // 1️⃣ Hive أولاً — UI فوري
-      final localChats = await _repo.getLocalChats();
-      localChats.fold((l) => emit(FetchChatsFailure(errorMessage: l)), (
-        r,
-      ) async {
+      // 1️⃣ Hive أولاً
+      final localResult = await _repo.getLocalChats();
+
+      if (localResult.isLeft()) {
+        emit(
+          FetchChatsFailure(
+            errorMessage: localResult.fold((l) => l, (_) => ''),
+          ),
+        );
+        return;
+      } else {
+        final r = localResult.fold((_) => <PrivateChatModel>[], (r) => r);
         if (r.isNotEmpty) {
           privateChatsCache = r;
           await _loadMessagesAndUpdateUnread(privateChatsCache);
@@ -49,7 +62,7 @@ class FetchPrivateChatsCubit extends Cubit<FetchPrivateChatsState> {
             emit(FetchPrivateChatsSuccess(chats: List.from(privateChatsCache)));
           }
         }
-      });
+      }
 
       // 2️⃣ Server
       await _fetchFromServer();
@@ -65,34 +78,35 @@ class FetchPrivateChatsCubit extends Cubit<FetchPrivateChatsState> {
       emit(FetchChatsFailure(errorMessage: '$e'));
     }
   }
-
   // ─────────────────────────────────────────────────────────────────
   // FETCH FROM SERVER
   // ─────────────────────────────────────────────────────────────────
 
   Future<void> _fetchFromServer() async {
-    final chats = await _repo.fetchChatsFromServer();
-    chats.fold((l) => emit(FetchChatsFailure(errorMessage: l.message)), (
-      r,
-    ) async {
-      if (r.isEmpty) {
-        privateChatsCache = [];
-        if (!isClosed) emit(FetchPrivateChatsSuccess(chats: []));
-        return;
-      }
+    final result = await _repo.fetchChatsFromServer();
 
-      privateChatsCache = r;
-      await _loadMessagesAndUpdateUnread(privateChatsCache);
+    if (result.isLeft()) {
+      final err = result.fold((l) => l.message, (_) => '');
+      emit(FetchChatsFailure(errorMessage: err));
+      return;
+    }
 
-      // أعد تشغيل الـ presence listener بالـ friends الجدد
-      _listenToFriendsPresence();
+    final r = result.fold((_) => <PrivateChatModel>[], (r) => r);
 
-      if (!isClosed) {
-        emit(FetchPrivateChatsSuccess(chats: List.from(privateChatsCache)));
-      }
-    });
+    if (r.isEmpty) {
+      privateChatsCache = [];
+      if (!isClosed) emit(FetchPrivateChatsSuccess(chats: []));
+      return;
+    }
+
+    privateChatsCache = r;
+    await _loadMessagesAndUpdateUnread(privateChatsCache);
+    _listenToFriendsPresence();
+
+    if (!isClosed) {
+      emit(FetchPrivateChatsSuccess(chats: List.from(privateChatsCache)));
+    }
   }
-
   // ─────────────────────────────────────────────────────────────────
   // CORE — حمّل رسايل كل chat واحسب الـ unread count
   // ─────────────────────────────────────────────────────────────────
@@ -186,7 +200,7 @@ class FetchPrivateChatsCubit extends Cubit<FetchPrivateChatsState> {
         )
         .subscribe();
   }
-
+ 
   // ─────────────────────────────────────────────────────────────────
   // CHATS REALTIME
   // ─────────────────────────────────────────────────────────────────
@@ -214,6 +228,8 @@ class FetchPrivateChatsCubit extends Cubit<FetchPrivateChatsState> {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 300), _fetchFromServer);
   }
+
+
 
   // ─────────────────────────────────────────────────────────────────
   // DISPOSE
