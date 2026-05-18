@@ -17,6 +17,8 @@ import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private
 import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo_impl.dart';
 import 'package:messenger_clone0/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo.dart';
 import 'package:messenger_clone0/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo_impl.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -88,4 +90,23 @@ void setUpGetIt() {
       storage: getIt<SupabaseStorage>(),
     ),
   );
+  // fetch private messages cubit
+  getIt.registerLazySingleton<FetchPrivateMessagesCubit>(
+    () => FetchPrivateMessagesCubit(
+      auth: getIt<AuthService>(),
+      client: getIt<SupabaseClientManager>(),
+      repo: getIt<FetchPrivateMessagesRepo>(),
+    ),
+  );
+  //fetch porivate chats cubit
+  getIt.registerLazySingleton<FetchPrivateChatsCubit>(() {
+    final chatsCubit = FetchPrivateChatsCubit(
+      client: getIt<SupabaseClientManager>(),
+      fetchMessages: getIt<FetchPrivateMessagesCubit>(),
+      repo: getIt<FetchPrivateChatRepo>(),
+    );
+    // setChatsCubit هنا مرة واحدة
+    getIt<FetchPrivateMessagesCubit>().setChatsCubit(chatsCubit);
+    return chatsCubit;
+  });
 }
