@@ -63,8 +63,8 @@ class AddFriendRepoImpl implements AddFriendRepo {
 
       final friend = UserModel.fromJson(friendData);
       await HiveService.saveUser(friend);
-
       final chat = PrivateChatModel.fromJson(response, friend);
+      await Future.delayed(const Duration(seconds: 1), () {});
       return Right(chat);
     } catch (e) {
       return Left(SupabaseError(message: "$e"));
