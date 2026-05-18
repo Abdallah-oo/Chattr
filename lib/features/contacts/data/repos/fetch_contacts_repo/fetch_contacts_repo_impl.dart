@@ -17,10 +17,11 @@ class FetchContactsRepoImpl implements FetchContactsRepo {
     List<String> ids,
   ) async {
     try {
-      final result = await _client
+ final result = await _client
           .from('messenger_users')
           .select()
-          .inFilter('id', ids);
+          .inFilter('id', ids)
+          .order('created_at', ascending: true); // ← ترتيب ثابت
 
       return right(result);
     } catch (e) {

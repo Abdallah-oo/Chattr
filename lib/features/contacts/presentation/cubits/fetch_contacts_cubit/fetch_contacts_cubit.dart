@@ -64,8 +64,12 @@ class FetchContactsCubit extends Cubit<FetchContactsState> {
       }
 
       contacts = contactsList;
+      contacts.sort((a, b) {
+        final aDate = a.createdAt ?? DateTime(0);
+        final bDate = b.createdAt ?? DateTime(0);
+        return aDate.compareTo(bDate);
+      });
       emit(FetchContactsSuccess(contacts: contacts));
-
       _subscribeToRealtime(myId);
     } catch (e) {
       emit(FetchContactsFailure(errorMessage: e.toString()));

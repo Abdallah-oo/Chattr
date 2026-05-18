@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:messenger_clone0/core/themes/app_colors.dart';
 import 'package:messenger_clone0/features/contacts/presentation/views/contacts_view.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/private_chats_view.dart';
 
 class Root extends StatefulWidget {
   const Root({super.key});
@@ -13,7 +14,9 @@ class Root extends StatefulWidget {
 class _RootState extends State<Root> {
   int currentIndex = 0;
 
-  final List<Widget> pages = const [ContactsView()];
+  final List<Widget> pages = const [ContactsView(),
+  PrivateChatsView()
+  ];
 
   final List<_NavItem> items = const [
     _NavItem(
@@ -21,6 +24,7 @@ class _RootState extends State<Root> {
       Icons.contact_page_outlined,
       'contacts',
     ),
+    _NavItem(Icons.chat, Icons.chat_outlined, "Chats"),
   ];
 
   void onTap(int index) {
@@ -38,8 +42,7 @@ class _RootState extends State<Root> {
             bottom: 20,
             left: 14,
             right: 14,
-            child: 
-            _ModernNavBar(
+            child: _ModernNavBar(
               currentIndex: currentIndex,
               items: items,
               onTap: onTap,

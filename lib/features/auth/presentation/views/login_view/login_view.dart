@@ -15,12 +15,14 @@ class LoginView extends StatelessWidget {
       onTap: () => FocusScope.of(context).unfocus(),
       child: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
-           if (state.status == AuthStatus.failure) {
+          if (state.status == AuthStatus.failure) {
             CustomSnackBar.error(context, state.errorMessage ?? '');
           }
           if (state.status == AuthStatus.success) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CustomSnackBar.success(context, 'Login Successfully');
+            });
             context.pushReplacement(Routes.root);
-            CustomSnackBar.success(context, 'Login Successfully');
           }
         },
         child: Scaffold(body: LoginViewBody()),

@@ -12,7 +12,7 @@ import 'package:messenger_clone0/core/utils/validators/auth_validation.dart';
 import 'package:messenger_clone0/core/widgets/custom_button.dart';
 import 'package:messenger_clone0/core/widgets/custom_text.dart';
 import 'package:messenger_clone0/core/widgets/custom_text_field.dart';
-import 'package:messenger_clone0/core/widgets/image/pick_image.dart';
+import 'package:messenger_clone0/core/widgets/image/ui/pick_image.dart';
 import 'package:messenger_clone0/features/auth/presentation/cubits/auth_cubit.dart';
 
 class SignupViewBody extends StatefulWidget {
