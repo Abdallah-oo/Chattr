@@ -13,9 +13,7 @@ class UnreadCountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-      '🔴 badge build - chatId: ${chat.chatId}, count: ${chat.unreadCount}',
-    );
+
     final count = chat.unreadCount;
 
     if (count == 0) {
@@ -25,7 +23,7 @@ class UnreadCountBadge extends StatelessWidget {
               width: 50,
               child: CustomText(
                 text: DateFormat.jm().format(chat.lastMessageTime!),
-                style: AppTextStyles.bodySmall,
+                style: AppTextStyles.bodySmall.copyWith(fontSize: 9),
               ),
             );
     }
