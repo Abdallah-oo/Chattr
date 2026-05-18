@@ -3,9 +3,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
+import 'package:messenger_clone0/core/themes/app_colors.dart';
 import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/di/get_it.dart';
 import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
 import 'package:messenger_clone0/core/widgets/custom_text.dart';
 import 'package:messenger_clone0/core/widgets/message/chat_message_list.dart';
@@ -33,7 +32,6 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
   final ScrollController _scrollController = ScrollController();
   bool _isPaginating = false;
   bool _userScrolledUp = false;
-  bool _initialScrollDone = false;
   int _prevMessageCount = 0;
 
   // آخر عدد unread اتعملت له markAllAsRead — عشان مش نكررها من غير سبب
@@ -44,7 +42,14 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
   @override
   void initState() {
     super.initState();
+
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<FetchPrivateMessagesCubit>().loadInitialMessages(
+        chatId: widget.chatData.chatId!,
+      );
+    });
   }
 
   @override
@@ -98,14 +103,6 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
       context.read<FetchPrivateMessagesCubit>().markAllAsRead(chatId: _chatId);
     }
 
-    // أول load
-    if (!_initialScrollDone && messages.isNotEmpty) {
-      _initialScrollDone = true;
-      _prevMessageCount = messages.length;
-      _scrollToBottom(animated: false);
-      return;
-    }
-
     // رسايل جديدة وصلت
     if (messages.length > _prevMessageCount) {
       _prevMessageCount = messages.length;
@@ -124,7 +121,11 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
         }
       },
       child: BlocListener<FetchPrivateMessagesCubit, FetchPrivateMessagesState>(
-        listenWhen: (_, curr) => curr is FetchPrivateMessagesSuccess,
+        listenWhen: (_, curr) {
+          if (curr is FetchPrivateMessagesLoading) return false;
+          if (curr is! FetchPrivateMessagesSuccess) return false;
+          return curr.chatId == widget.chatData.chatId;
+        },
         listener: (context, state) {
           if (state is FetchPrivateMessagesSuccess) _handleNewMessages(state);
         },
@@ -151,20 +152,26 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
                               vertical: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 206, 205, 203),
+                              color: AppColors.surface,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.lock, size: 18, color: Colors.grey),
-                                Gap(5),
+                                const Icon(
+                                  Icons.lock,
+                                  size: 18,
+                                  color: Colors.grey,
+                                ),
+                                const Gap(5),
                                 Flexible(
                                   child: CustomText(
                                     maxLines: 1,
                                     text:
                                         '"Messages in this chat are end-to-end encrypted."',
-                                   style: AppTextStyles.headlineSmall,
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -184,8 +191,7 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
               ),
             ),
             SendMessageField(
-              auth: getIt<AuthService>(),
-              chatData: widget.chatData,
+                     chatData: widget.chatData,
               curruntUser: widget.curruntUser,
             ),
           ],

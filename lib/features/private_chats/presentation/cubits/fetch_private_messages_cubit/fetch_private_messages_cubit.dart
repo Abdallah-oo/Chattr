@@ -9,6 +9,7 @@ import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
 import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 part 'fetch_private_messages_state.dart';
 
 class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
@@ -68,16 +69,14 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
 
     // 1️⃣ Hive — لو مفيش cache
     if (!alreadyCached) {
-      final local = await _repo.getLocalMessages(
+      final localResult = await _repo.getLocalMessages(
         chatId: chatId,
         limit: _pageSize,
       );
-      local.fold(
+      localResult.fold(
         (l) {
-          debugPrint('❌ loadInitialMessages: $l');
-          if (_cache[chatId]?.isNotEmpty == true) {
-            _emit(chatId);
-          } else {
+          debugPrint('❌ getLocalMessages: $l');
+          if (_cache[chatId]?.isNotEmpty != true) {
             emit(FetchPrivateMessagesfailure(errMessage: l.toString()));
           }
         },
@@ -91,38 +90,41 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
     }
 
     // 2️⃣ Server — بس لو أول مرة
+    // ✅ استخرج الـ value خارج الـ fold عشان الـ async يشتغل صح
     if (!alreadyCached) {
-      final serverMsgs = await _repo.fetchInitialMessages(
+      final serverResult = await _repo.fetchInitialMessages(
         chatId: chatId,
         pageSize: _pageSize,
       );
-      serverMsgs.fold(
-        (l) {
-          debugPrint('❌ loadInitialMessages: $l');
-          if (_cache[chatId]?.isNotEmpty == true) {
-            _emit(chatId);
-          } else {
-            emit(FetchPrivateMessagesfailure(errMessage: l.toString()));
-          }
-        },
-        (serverMsgs) async {
-          await _fetchMissingUsers(serverMsgs);
-          final enriched = await _attachLocalPaths(serverMsgs);
-          final existing = _cache[chatId];
-          final merged = _mergeWithCache(existing, enriched);
-          _cache[chatId] = merged;
 
-          if (serverMsgs.isNotEmpty) {
-            _oldestDate[chatId] = serverMsgs.first.createdAt;
-            _hasMoreMap[chatId] = serverMsgs.length == _pageSize;
-          } else {
-            _hasMoreMap[chatId] = false;
-          }
+      if (serverResult.isLeft()) {
+        final err = serverResult.fold((l) => l.toString(), (_) => '');
+        debugPrint('❌ fetchInitialMessages: $err');
+        if (_cache[chatId]?.isNotEmpty != true) {
+          emit(FetchPrivateMessagesfailure(errMessage: err));
+        }
+      } else {
+        final serverMsgs = serverResult.fold(
+          (_) => <PrivateMessageModel>[],
+          (r) => r,
+        );
 
-          _persistAll(enriched);
-          _emit(chatId);
-        },
-      );
+        // كل الـ async خارج الـ fold تماماً
+        await _fetchMissingUsers(serverMsgs);
+        final enriched = await _attachLocalPaths(serverMsgs);
+        final merged = _mergeWithCache(_cache[chatId], enriched);
+        _cache[chatId] = merged;
+
+        if (serverMsgs.isNotEmpty) {
+          _oldestDate[chatId] = serverMsgs.first.createdAt;
+          _hasMoreMap[chatId] = serverMsgs.length == _pageSize;
+        } else {
+          _hasMoreMap[chatId] = false;
+        }
+
+        await _persistAll(enriched);
+        _emit(chatId);
+      }
     }
 
     // 3️⃣ Realtime — بس لو مش مشترك
@@ -150,10 +152,8 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
         }, onError: (e) => debugPrint('❌ Realtime stream error ($chatId): $e'));
   }
 
-  void _processSnapshot(
-    String chatId,
-    List<PrivateMessageModel> incoming,
-  ) async {
+  // ✅ مش async — sync بالكامل عشان الـ stream events تتعالج بالترتيب
+  void _processSnapshot(String chatId, List<PrivateMessageModel> incoming) {
     final list = _cache[chatId]!;
     bool dirty = false;
 
@@ -177,15 +177,25 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
         if (!isMine && old.read == true && finalMsg.read != true) {
           finalMsg = finalMsg.copyWith(read: true);
         }
+
         if (_equal(old, finalMsg)) continue;
 
         list[idx] = finalMsg;
-        final result = await _repo.saveMessageLocally(finalMsg);
-        result.fold((l) => debugPrint('save message failed: $l'), (r) => r);
+        // ✅ fire and forget — مش بنبلوك الـ stream
+        _repo
+            .saveMessageLocally(finalMsg)
+            .then(
+              (r) =>
+                  r.fold((l) => debugPrint('save message failed: $l'), (_) {}),
+            );
       } else {
         list.add(enriched);
-        final result = await _repo.saveMessageLocally(enriched);
-        result.fold((l) => debugPrint('save message failed: $l'), (r) => r);
+        _repo
+            .saveMessageLocally(enriched)
+            .then(
+              (r) =>
+                  r.fold((l) => debugPrint('save message failed: $l'), (_) {}),
+            );
       }
 
       dirty = true;
@@ -205,39 +215,47 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
 
     _loadingMoreMap[chatId] = true;
 
-    final msgs = await _repo.fetchMoreMessages(
-      chatId: chatId,
-      before: _oldestDate[chatId]!,
-      pageSize: _pageSize,
-    );
+    try {
+      final result = await _repo.fetchMoreMessages(
+        chatId: chatId,
+        before: _oldestDate[chatId]!,
+        pageSize: _pageSize,
+      );
 
-    msgs.fold(
-      (l) {
-        debugPrint(' load More Messages failed: $l');
-      },
-      (msgs) async {
-        if (msgs.isEmpty) {
-          _hasMoreMap[chatId] = false;
-        } else {
-          await _fetchMissingUsers(msgs);
+      // ✅ استخرج الـ value خارج الـ fold — مفيش async جوا fold
+      if (result.isLeft()) {
+        debugPrint(
+          'loadMoreMessages failed: ${result.fold((l) => l, (_) => '')}',
+        );
+        return;
+      }
 
-          final reversed = msgs.reversed.toList();
-          final existingIds = _cache[chatId]!.map((m) => m.messageId).toSet();
-          final fresh = reversed
-              .where((m) => !existingIds.contains(m.messageId))
-              .toList();
+      final msgs = result.fold((_) => <PrivateMessageModel>[], (r) => r);
 
-          _cache[chatId]!.insertAll(0, fresh);
-          _oldestDate[chatId] = reversed.first.createdAt;
-          _hasMoreMap[chatId] = msgs.length == _pageSize;
+      if (msgs.isEmpty) {
+        _hasMoreMap[chatId] = false;
+      } else {
+        // ✅ كل الـ async هنا خارج الـ fold
+        await _fetchMissingUsers(msgs);
 
-          _persistAll(fresh);
-        }
+        final reversed = msgs.reversed.toList();
+        final existingIds = _cache[chatId]!.map((m) => m.messageId).toSet();
+        final fresh = reversed
+            .where((m) => !existingIds.contains(m.messageId))
+            .toList();
 
-        _sortAndEmit(chatId);
-      },
-    );
-    _loadingMoreMap[chatId] = false;
+        _cache[chatId]!.insertAll(0, fresh);
+        _oldestDate[chatId] = reversed.first.createdAt;
+        _hasMoreMap[chatId] = msgs.length == _pageSize;
+
+        await _persistAll(fresh);
+      }
+
+      _sortAndEmit(chatId);
+    } finally {
+      // ✅ دايماً بيتنفذ حتى لو في error — مش بيتأخر زي ما كان
+      _loadingMoreMap[chatId] = false;
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────
@@ -278,7 +296,7 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
           privateMessageStatus: PrivateMessageStatus.sent,
         );
         final result = await _repo.saveMessageLocally(list[streamIdx]);
-        result.fold((l) => debugPrint('save message failed: $l'), (r) => r);
+        result.fold((l) => debugPrint('save message failed: $l'), (_) {});
         _emit(chatId);
       }
       return;
@@ -295,9 +313,7 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
     await _repo.deleteMessageLocally(tempId);
     if (serverMessage.messageId != null) {
       final result = await _repo.saveMessageLocally(updated);
-      result.fold((l) {
-        debugPrint('save message failed: $l');
-      }, (r) => r);
+      result.fold((l) => debugPrint('save message failed: $l'), (_) {});
     }
 
     _emit(chatId);
@@ -339,7 +355,7 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
       if (list[i].read == false && list[i].senderId != _myId) {
         list[i] = list[i].copyWith(read: true);
         final result = await _repo.saveMessageLocally(list[i]);
-        result.fold((l) => debugPrint('save message failed: $l'), (r) => r);
+        result.fold((l) => debugPrint('save message failed: $l'), (_) {});
       }
     }
     _emit(chatId);
@@ -384,7 +400,7 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
             privateMessageStatus: PrivateMessageStatus.deleteFailed,
           );
         },
-        (r) {
+        (_) {
           list[idx] = list[idx].copyWith(
             isDeleted: true,
             privateMessageStatus: PrivateMessageStatus.sent,
@@ -392,7 +408,12 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
         },
       );
 
-      _repo.saveMessageLocally(list[idx]);
+      // fire and forget
+      _repo
+          .saveMessageLocally(list[idx])
+          .then(
+            (r) => r.fold((l) => debugPrint('save message failed: $l'), (_) {}),
+          );
     }
 
     _emit(chatId);
@@ -429,7 +450,7 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
           privateMessageStatus: PrivateMessageStatus.editingFaild,
         );
       },
-      (r) {
+      (_) {
         list[idx] = list[idx].copyWith(
           content: content,
           privateMessageStatus: PrivateMessageStatus.sent,
@@ -437,7 +458,12 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
       },
     );
 
-    _repo.saveMessageLocally(list[idx]);
+    // fire and forget
+    _repo
+        .saveMessageLocally(list[idx])
+        .then(
+          (r) => r.fold((l) => debugPrint('save message failed: $l'), (_) {}),
+        );
     _emit(chatId);
   }
 
@@ -513,7 +539,7 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
         final saved = await _repo.getLocalMessage(msg.messageId!);
         return saved.fold(
           (l) {
-            debugPrint('get local message failed:$l');
+            debugPrint('get local message failed: $l');
             return msg;
           },
           (saved) {
@@ -525,11 +551,11 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
     );
   }
 
-  void _persistAll(List<PrivateMessageModel> msgs) async {
+  // ✅ async صح — بيتانتظر في loadInitialMessages و loadMoreMessages
+  Future<void> _persistAll(List<PrivateMessageModel> msgs) async {
     for (final m in msgs) {
       final result = await _repo.saveMessageLocally(m);
-
-      result.fold((l) => debugPrint('save message failed: $l'), (r) => r);
+      result.fold((l) => debugPrint('save message failed: $l'), (_) {});
     }
   }
 
@@ -542,6 +568,7 @@ class FetchPrivateMessagesCubit extends Cubit<FetchPrivateMessagesState> {
     if (isClosed) return;
     emit(
       FetchPrivateMessagesSuccess(
+        chatId: chatId, // ← ضيف دي
         messages: List.unmodifiable(_cache[chatId] ?? []),
       ),
     );
