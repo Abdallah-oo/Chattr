@@ -44,7 +44,7 @@ class _AddFriendBottomSheetState extends State<AddFriendBottomSheet> {
           context.pop();
         }
         if (state is AddFriendSuccess) {
-          CustomSnackBar.success(context, 'Your friend was added successfully');
+          context.pop();
         }
       },
       child: GestureDetector(
