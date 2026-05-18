@@ -58,7 +58,7 @@ class FetchPrivateChatRepoImpl implements FetchPrivateChatRepo {
     }
   }
 
-  @override
+@override
   Future<Either<SupabaseError, List<PrivateChatModel>>>
   fetchChatsFromServer() async {
     try {
@@ -85,26 +85,37 @@ class FetchPrivateChatRepoImpl implements FetchPrivateChatRepo {
         if (friendId.isNotEmpty) friendIds.add(friendId);
       }
 
-      final usersMap = await fetchFriendsData(friendIds.toList());
-      late UserModel friend;
+      // ✅ استخرج الـ usersMap قبل الـ map وتحقق من الـ error
+      final usersMapResult = await fetchFriendsData(friendIds.toList());
+
+      if (usersMapResult.isLeft()) {
+        return Left(
+          SupabaseError(
+            message: usersMapResult.fold((l) => l.message, (_) => ''),
+          ),
+        );
+      }
+
+      final usersMap = usersMapResult.fold(
+        (_) => <String, UserModel>{},
+        (r) => r,
+      );
+
       final chats = response.map<PrivateChatModel>((chat) {
         final members = List<String>.from(chat['members']);
         final friendId = members.firstWhere(
           (id) => id != myId,
           orElse: () => '',
         );
-        usersMap.fold(
-          (l) => Left(SupabaseError(message: l.message)),
-          (r) => friend = r[friendId]!,
-        );
-
+        // ✅ friend جوا الـ map مباشرة — مش late خارجها
+        final friend = usersMap[friendId]!;
         return PrivateChatModel.fromJson(chat, friend);
       }).toList();
 
       await saveChatsLocally(chats);
       return Right(chats);
     } catch (e) {
-      return Left(SupabaseError(message: "$e"));
+      return Left(SupabaseError(message: '$e'));
     }
   }
 }
