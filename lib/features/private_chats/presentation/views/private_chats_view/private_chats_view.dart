@@ -6,6 +6,8 @@ import 'package:messenger_clone0/core/utils/di/get_it.dart';
 import 'package:messenger_clone0/core/widgets/custom_appbar.dart';
 import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo/add_friend_repo.dart';
 import 'package:messenger_clone0/features/private_chats/presentation/cubits/add_friend_cubit/add_friend_cubit.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/private_chats_view_body.dart';
 import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/widgets/add_friend_bottom_sheet.dart';
 
@@ -33,8 +35,14 @@ class PrivateChatsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: BlocProvider(
-        create: (context) => SearchCubit(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: getIt<FetchPrivateMessagesCubit>()),
+          BlocProvider.value(
+            value: getIt<FetchPrivateChatsCubit>()..fetchPrivateChats(),
+          ),
+          BlocProvider(create: (context) => SearchCubit()),
+        ],
         child: Scaffold(
           appBar: CustomAppBar(
             title: 'Private Chats',
