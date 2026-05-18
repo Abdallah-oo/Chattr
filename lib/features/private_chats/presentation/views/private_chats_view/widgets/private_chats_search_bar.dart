@@ -38,7 +38,8 @@ class _ChatSearchBarState extends State<ChatSearchBar> {
           chats=state.chats;
        }
         
-        return Padding(
+        return chats.isNotEmpty?
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: CustomTextField(
             controller: _searchController,
@@ -50,7 +51,7 @@ class _ChatSearchBarState extends State<ChatSearchBar> {
     
             suffixIcon: Icon(CupertinoIcons.search, color: AppColors.inputBorder),
           ),
-        );
+        ):SizedBox.shrink();
       },
     );
   }
