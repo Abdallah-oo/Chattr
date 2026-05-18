@@ -14,7 +14,6 @@ import 'package:messenger_clone0/core/widgets/custom_text.dart';
 import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
 import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
 import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/widgets/unread_count_badge.dart';
 
 class PrivateChatsList extends StatelessWidget {
@@ -23,6 +22,14 @@ class PrivateChatsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FetchPrivateChatsCubit, FetchPrivateChatsState>(
+        buildWhen: (prev, curr) {
+        // متبنيش على loading لو في chats موجودة قبل كده
+        if (curr is FetchPrivateChatsloading &&
+            prev is FetchPrivateChatsSuccess) {
+          return false;
+        }
+        return true;
+      },
       builder: (context, state) {
         if (state is FetchPrivateChatsSuccess) {
           final currentUser = context
@@ -43,7 +50,7 @@ class PrivateChatsList extends StatelessWidget {
               child: Center(
                 child: CustomText(
                   text: '💬 No chats yet',
-                  style: AppTextStyles.displayMedium,
+                  style: AppTextStyles.headlineMedium,
                 ),
               ),
             );
@@ -114,8 +121,7 @@ class _ChatListItem extends StatelessWidget {
     final privateChatParams = PrivateChatParams(
       chatData: chat,
       curruntUser: currentUser,
-      chatCubit: context.read<FetchPrivateChatsCubit>(),
-      messagesCubit: context.read<FetchPrivateMessagesCubit>(),
+   
     );
 
     return GestureDetector(
@@ -136,7 +142,7 @@ class _ChatListItem extends StatelessWidget {
                 children: [
                   CustomText(
                     text: chat.friend?.name ?? '',
-                    style: AppTextStyles.headlineMedium,
+                    style: AppTextStyles.bodyMedium,
                   ),
                   const Gap(4),
                   _LastMessageText(
@@ -177,7 +183,7 @@ class _LastMessageText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (message.isEmpty) {
       return const CustomText(
-        style: AppTextStyles.bodySmall,
+       style:  TextStyle(color: Colors.grey, fontSize: 10),
         text: '💬 Start your first conversation',
       );
     }
@@ -191,7 +197,7 @@ class _LastMessageText extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
       text: TextSpan(
-        style: const TextStyle(color: Colors.grey, fontSize: 12),
+        style: const TextStyle(color: Colors.grey, fontSize: 10),
         children: [
           TextSpan(
             text: prefix,
