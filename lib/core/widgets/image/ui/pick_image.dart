@@ -106,7 +106,6 @@ class _NetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("network is working right ");
     return CachedNetworkImage(
       imageUrl: imageUrl,
       fit: BoxFit.cover,

@@ -43,8 +43,11 @@ class ContactsView extends StatelessWidget {
         ),
 
         body: SafeArea(
-          child: BlocProvider(
-            create: (_) => SearchCubit(),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => SearchCubit()),
+              
+            ],
             child: const ContactsViewBody(),
           ),
         ),

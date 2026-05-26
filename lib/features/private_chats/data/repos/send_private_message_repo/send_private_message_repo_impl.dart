@@ -34,8 +34,8 @@ class SendPrivateMessageRepoImpl implements SendPrivateMessageRepo {
   @override
   Future<Either<SupabaseError, String>> uploadImage(File imageFile) async {
     try {
-      final path = await _storage.uploadImage(imageFile);
-      final url = _storage.getFileUrl(path);
+      final path = await _storage.uploadImage(file: imageFile,storageFile:'chat_images' );
+      final url = _storage.getFileUrl(path: path,storageFile: 'chat_images');
       return right(url);
     } catch (e) {
       return left(SupabaseError(message: e.toString()));
@@ -45,8 +45,8 @@ class SendPrivateMessageRepoImpl implements SendPrivateMessageRepo {
   @override
   Future<Either<SupabaseError, String>> uploadAudio(File audioFile) async {
     try {
-      final path = await _storage.uploadAudio(audioFile);
-      final url = _storage.getFileUrl(path);
+      final path = await _storage.uploadAudio(file: audioFile,storageFile: 'chat-audio');
+      final url = _storage.getFileUrl(path: path,storageFile: 'chat-audio');
       return right(url);
     } catch (e) {
       return left(SupabaseError(message: e.toString()));

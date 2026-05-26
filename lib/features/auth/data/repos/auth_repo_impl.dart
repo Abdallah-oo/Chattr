@@ -48,8 +48,8 @@ class AuthRepoImpl implements AuthRepo {
     try {
       final respons = await _authService.signUp(email, password);
       final myUuid = _authService.currentUser!.id;
-      final path = await _storage.uploadImage(image);
-      final imagePath = _storage.getFileUrl(path);
+      final path = await _storage.uploadImage(file: image,storageFile: 'users_image');
+      final imagePath = _storage.getFileUrl(path: path,storageFile: 'users_image');
 
       ///user data as user model
       final UserModel data = UserModel(

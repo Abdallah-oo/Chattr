@@ -1,21 +1,17 @@
-
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
 import 'package:messenger_clone0/core/services/supabase/supabase_storage.dart';
-import 'package:messenger_clone0/core/utils/di/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import 'audio_state.dart';
 
 class AudioCubit extends Cubit<AudioState> {
-  AudioCubit() : super(const AudioState());
+  AudioCubit(this._storage) : super(const AudioState());
 
   final AudioRecorder _recorder = AudioRecorder();
-  final SupabaseStorage storage = SupabaseStorage(storageFile: "chat-audio",clientManager: getIt<SupabaseClientManager>());
+  final SupabaseStorage _storage ;
 
   Timer? _timer;
   int lastDuration = 0;
@@ -111,8 +107,8 @@ class AudioCubit extends Cubit<AudioState> {
     required Function(String uploadedUrl) onUploaded,
   }) async {
     try {
-      final uploadedPath = await storage.uploadAudio(File(localPath));
-      final audioUrl = storage.getFileUrl(uploadedPath);
+      final uploadedPath = await _storage.uploadAudio(file: File(localPath),storageFile: 'chat-audio');
+      final audioUrl = _storage.getFileUrl(path: uploadedPath, storageFile: 'chat-audio');
 
       if (!isClosed) {
         emit(

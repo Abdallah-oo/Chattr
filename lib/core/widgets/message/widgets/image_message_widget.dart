@@ -1,12 +1,14 @@
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:messenger_clone0/core/services/hive/hive_services.dart';
+import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 import 'package:path_provider/path_provider.dart';
-
 
 class ImageMessageWidget extends StatefulWidget {
   const ImageMessageWidget({super.key, required this.imageMessage});
@@ -84,8 +86,9 @@ class _ImageMessageWidgetState extends State<ImageMessageWidget>
     // Hive lookup
     if (!_hiveLookedUp && messageId != null) {
       _hiveLookedUp = true;
-      final hivePath =  await HiveService.getPrivateMessageLocalPath(messageId)
-         ;
+      final hivePath = widget.imageMessage is PrivateMessageModel
+          ? await HiveService.getPrivateMessageLocalPath(messageId)
+          : await HiveService.getGroupMessageLocalPath(messageId);
       if (hivePath != null && File(hivePath).existsSync()) {
         if (mounted) setState(() => _localPath = hivePath);
         return;
@@ -112,11 +115,15 @@ class _ImageMessageWidgetState extends State<ImageMessageWidget>
         await File(path).writeAsBytes(res.bodyBytes);
       }
 
-      await HiveService.savePrivateMessageLocalPath(
+      widget.imageMessage is PrivateMessageModel
+          ? await HiveService.savePrivateMessageLocalPath(
               messageId: messageId,
               localPath: path,
             )
-         ;
+          : await HiveService.saveGroupMessageLocalPath(
+              messageId: messageId,
+              localPath: path,
+            );
 
       if (mounted) setState(() => _localPath = path);
     } catch (e) {
@@ -130,8 +137,7 @@ class _ImageMessageWidgetState extends State<ImageMessageWidget>
 
     // ✅ Local file — أسرع وأفضل
     if (_localPath != null) {
-      return
-       RepaintBoundary(
+      return RepaintBoundary(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Image.file(
@@ -141,7 +147,7 @@ class _ImageMessageWidgetState extends State<ImageMessageWidget>
             gaplessPlayback: true,
             cacheWidth:
                 800, // يحط الصورة في الـ image cache بـ resolution معقولة
-            frameBuilder: (_, child, frame, __) =>
+            frameBuilder: (_, child, frame, _) =>
                 frame == null ? _Placeholder() : child,
           ),
         ),

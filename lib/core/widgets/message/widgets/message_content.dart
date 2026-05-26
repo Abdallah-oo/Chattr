@@ -8,6 +8,8 @@ import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
 import 'package:messenger_clone0/core/widgets/custom_text.dart';
 import 'package:messenger_clone0/core/widgets/message/widgets/audio_message_widget.dart';
 import 'package:messenger_clone0/core/widgets/message/widgets/image_message_widget.dart';
+import 'package:messenger_clone0/features/group_chats/data/models/group_message_model.dart';
+import 'package:messenger_clone0/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
 import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 import 'package:messenger_clone0/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 
@@ -28,6 +30,9 @@ class MessageContent extends StatelessWidget {
     if (message is PrivateMessageModel) {
       final failedMessage = message as PrivateMessageModel;
       context.read<SendPrivateMessageCubit>().retryMessage(failedMessage);
+    } else if (message is GroupMessageModel) {
+      final failedMessage = message as GroupMessageModel;
+      context.read<SendGroupMessageCubit>().retryMessage(failedMessage);
     }
   }
 
@@ -40,6 +45,13 @@ class MessageContent extends StatelessWidget {
       context.read<SendPrivateMessageCubit>().retryDelete(
         chatId: privateChatId,
         message: privateMessage,
+      );
+    } else if (message is GroupMessageModel) {
+      final groupMessage = message as GroupMessageModel;
+      final groupId = chatId;
+      context.read<SendGroupMessageCubit>().retryDelete(
+        groupId: groupId,
+        message: groupMessage,
       );
     }
   }
@@ -55,123 +67,262 @@ class MessageContent extends StatelessWidget {
         message: privateMessage,
         content: content,
       );
+    } else if (message is GroupMessageModel) {
+      final groupMessage = message as GroupMessageModel;
+      final groupId = chatId;
+      context.read<SendGroupMessageCubit>().retryEditMessage(
+        content: message.content,
+        groupId: groupId,
+        message: groupMessage,
+      );
     }
   }
 
   void _retry({required dynamic status, required BuildContext context}) {
-    final retryActions = {
-      PrivateMessageStatus.failed: _retryMessage,
-      PrivateMessageStatus.deleteFailed: _retryDelete,
-      PrivateMessageStatus.editingFaild: _retryEdit,
-    };
-
+    final retryActions = status is PrivateMessageStatus
+        ? {
+            PrivateMessageStatus.failed: _retryMessage,
+            PrivateMessageStatus.deleteFailed: _retryDelete,
+            PrivateMessageStatus.editingFaild: _retryEdit,
+          }
+        : {
+            GroupMessageStatus.failed: _retryMessage,
+            GroupMessageStatus.deleteFailed: _retryDelete,
+            GroupMessageStatus.editingFaild: _retryEdit,
+          };
     retryActions[status]?.call(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final status = (message as PrivateMessageModel).privateMessageStatus;
+    final status = message is PrivateMessageModel
+        ? (message as PrivateMessageModel).privateMessageStatus
+        : (message as GroupMessageModel).status;
 
-    return Row(
-      children: [
-        if ((isMy) &&
-            (status == PrivateMessageStatus.failed ||
-                status == PrivateMessageStatus.deleteFailed ||
-                status == PrivateMessageStatus.editingFaild)) ...[
-          GestureDetector(
-            onTap: () => _retry(status: status, context: context),
-            child: Container(
-              padding: EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.refresh, size: 16, color: Colors.white),
-            ),
-          ),
-          Gap(5),
-        ],
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                  bottomRight: isMy ? Radius.circular(10) : Radius.circular(0),
-                  bottomLeft: isMy ? Radius.circular(0) : Radius.circular(10),
+    return message is PrivateMessageModel
+        ?
+          //?private message content
+          Row(
+            children: [
+              if ((isMy) &&
+                  (status == PrivateMessageStatus.failed ||
+                      status == PrivateMessageStatus.deleteFailed ||
+                      status == PrivateMessageStatus.editingFaild)) ...[
+                GestureDetector(
+                  onTap: () => _retry(status: status, context: context),
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.refresh, size: 16, color: Colors.white),
+                  ),
                 ),
-                color: message.isDeleted == true
-                    ? AppColors.primary.withOpacity(0.6)
-                    : AppColors.primary,
-              ),
-              constraints: BoxConstraints(maxWidth: context.screenWidth * 0.5),
-              child: Column(
-                crossAxisAlignment: isMy
-                    ? CrossAxisAlignment.start
-                    : CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
+                Gap(5),
+              ],
+              Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  message.isDeleted == true
-                      ? CustomText(
-                          align: TextAlign.start,
-                          text: " message has been deleted ⊘",
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontSize: message.isDeleted == true ? 12 : 14,
-                          ),
-                        )
-                      :
-                        ///privateMessage
-                        message.privateMessageType == PrivateMessageType.voice
-                      ? AudioMessageWidget(audioMessage: message)
-                      : message.privateMessageType == PrivateMessageType.image
-                      ? ImageMessageWidget(imageMessage: message)
-                      : CustomText(
-                          align: TextAlign.start,
-                          text: message.content,
-                          maxLines: 1024,
-                          style: AppTextStyles.headlineSmall.copyWith(
-                            fontSize: message.isDeleted == true ? 12 : 14,
-                            color: message.isDeleted == true
-                                ? Colors.grey
-                                : Colors.white,
-                          ),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                        bottomRight: isMy
+                            ? Radius.circular(10)
+                            : Radius.circular(0),
+                        bottomLeft: isMy
+                            ? Radius.circular(0)
+                            : Radius.circular(10),
+                      ),
+                      color: message.isDeleted == true
+                          ? AppColors.primary.withOpacity(0.6)
+                          : AppColors.primary,
+                    ),
+                    constraints: BoxConstraints(
+                      maxWidth: context.screenWidth * 0.5,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: isMy
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        message.isDeleted == true
+                            ? CustomText(
+                                align: TextAlign.start,
+
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontSize: message.isDeleted == true ? 12 : 14,
+                                ),
+
+                                text: " message has been deleted ⊘",
+                              )
+                            :
+                              ///privateMessage
+                              message.privateMessageType ==
+                                  PrivateMessageType.voice
+                            ? AudioMessageWidget(audioMessage: message)
+                            : message.privateMessageType ==
+                                  PrivateMessageType.image
+                            ? ImageMessageWidget(imageMessage: message)
+                            : CustomText(
+                                align: TextAlign.start,
+                                style: AppTextStyles.headlineSmall.copyWith(
+                                  fontSize: message.isDeleted == true ? 12 : 14,
+                                  color: message.isDeleted == true
+                                      ? Colors.grey
+                                      : Colors.white,
+                                ),
+                                text: message.content,
+                                maxLines: 1024,
+                              ),
+                        Gap(isMy ? 10 : 20),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            !isMy
+                                ? SizedBox.shrink()
+                                : message.isDeleted == true
+                                ? SizedBox.shrink()
+                                : _buildStatusIndicator(status),
+                            Gap(50),
+                          ],
                         ),
-                  Gap(isMy ? 10 : 20),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      !isMy
-                          ? SizedBox.shrink()
-                          : message.isDeleted == true
-                          ? SizedBox.shrink()
-                          : _buildStatusIndicator(status),
-                      Gap(50),
-                    ],
+                      ],
+                    ),
+                  ),
+
+                  Positioned(
+                    bottom: 8,
+                    right: !isMy ? null : 5,
+                    left: isMy ? null : 5,
+                    child: CustomText(
+               style: AppTextStyles.bodySmall.copyWith(
+                        color: message.isDeleted == true
+                            ? Colors.grey
+                            : Colors.white,
+                      ),
+                      text: (DateFormat(
+                        'jm',
+                      ).format(DateTime.parse((message.createdAt).toString()))),
+                    ),
                   ),
                 ],
               ),
-            ),
-
-            Positioned(
-              bottom: 8,
-              right: !isMy ? null : 5,
-              left: isMy ? null : 5,
-              child: CustomText(
-                text: (DateFormat(
-                  'jm',
-                ).format(DateTime.parse((message.createdAt).toString()))),
-                style: AppTextStyles.bodySmall.copyWith(
-                 color: message.isDeleted == true ? Colors.grey : Colors.white,
+            ],
+          )
+        :
+          //?group message content
+          Row(
+            children: [
+              if ((isMy) &&
+                  (status == GroupMessageStatus.failed ||
+                      status == GroupMessageStatus.deleteFailed ||
+                      status == GroupMessageStatus.editingFaild)) ...[
+                GestureDetector(
+                  onTap: () => _retry(status: status, context: context),
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.refresh, size: 16, color: Colors.white),
+                  ),
                 ),
+                Gap(5),
+              ],
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                        bottomRight: isMy
+                            ? Radius.circular(10)
+                            : Radius.circular(0),
+                        bottomLeft: isMy
+                            ? Radius.circular(0)
+                            : Radius.circular(10),
+                      ),
+                             color: message.isDeleted == true
+                    ? AppColors.primary.withOpacity(0.6)
+                    : AppColors.primary,
+            
+                    ),
+                    constraints: BoxConstraints(
+                      maxWidth: context.screenWidth * 0.5,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: isMy
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        message.isDeleted == true
+                            ? CustomText(
+                                align: TextAlign.start,
+                               style: AppTextStyles.bodyMedium.copyWith(
+                                  fontSize: message.isDeleted == true ? 12 : 14,
+                                ),
+                                text: " message has been deleted ⊘",
+                              )
+                            : message.messageType == GroupMessageType.voice
+                            ? AudioMessageWidget(audioMessage: message)
+                            : message.messageType == GroupMessageType.image
+                            ? ImageMessageWidget(imageMessage: message)
+                            : CustomText(
+                                align: TextAlign.start,
+                                 style: AppTextStyles.headlineSmall.copyWith(
+                                  fontSize: message.isDeleted == true ? 12 : 14,
+                                  color: message.isDeleted == true
+                                      ? Colors.grey
+                                      : Colors.white,
+                                ),
+                                text: message.content,
+                                maxLines: 1024,
+                              ),
+                        Gap(isMy ? 10 : 20),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            !isMy
+                                ? SizedBox.shrink()
+                                : message.isDeleted == true
+                                ? SizedBox.shrink()
+                                : _buildStatusIndicator(status),
+                            Gap(50),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Positioned(
+                    bottom: 8,
+                    right: !isMy ? null : 5,
+                    left: isMy ? null : 5,
+                    child: CustomText(
+                        style: AppTextStyles.bodySmall.copyWith(
+                        color: message.isDeleted == true
+                            ? Colors.grey
+                            : Colors.white,
+                      ),
+                      text: (DateFormat(
+                        'jm',
+                      ).format(DateTime.parse((message.createdAt).toString()))),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+            ],
+          );
   }
 
   //..................................................................
@@ -215,7 +366,46 @@ class MessageContent extends StatelessWidget {
         case PrivateMessageStatus.editingFaild:
           return Icon(Icons.error_outline, size: 16, color: Colors.red);
       }
-    } 
+    } else {
+      switch (status) {
+        case GroupMessageStatus.sending:
+          return Icon(
+            Icons.access_time_rounded,
+            size: 16,
+            color: Colors.white70,
+          );
+
+        case GroupMessageStatus.sent:
+          return Icon(
+            Icons.check_circle_outline_rounded,
+            size: 16,
+            color: Colors.white70,
+          );
+
+        case GroupMessageStatus.failed:
+          return Icon(Icons.error_outline, size: 16, color: Colors.red);
+
+        case GroupMessageStatus.deleting:
+          return Icon(
+            Icons.access_time_rounded,
+            size: 16,
+            color: Colors.white70,
+          );
+
+        case GroupMessageStatus.deleteFailed:
+          return Icon(Icons.error_outline, size: 16, color: Colors.red);
+
+        case GroupMessageStatus.editing:
+          return Icon(
+            Icons.access_time_rounded,
+            size: 16,
+            color: Colors.white70,
+          );
+
+        case GroupMessageStatus.editingFaild:
+          return Icon(Icons.error_outline, size: 16, color: Colors.red);
+      }
+    }
     return SizedBox.shrink();
   }
 }

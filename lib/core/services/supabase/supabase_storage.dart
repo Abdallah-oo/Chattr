@@ -4,52 +4,75 @@ import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-
 class SupabaseStorage {
   final SupabaseClientManager _clientManager;
-
   SupabaseClient get _client => _clientManager.client;
-  final String storageFile;
-
-  SupabaseStorage({required this.storageFile, required SupabaseClientManager clientManager}) : _clientManager = clientManager;
+  SupabaseStorage(this._clientManager);
 
   // ===================== Public APIs =====================
 
-  Future<String> uploadImage(File file) async {
-    return _execute(() => _uploadFile(file));
+  Future<String> uploadImage({
+    required File file,
+    required String storageFile,
+  }) async {
+    return _execute(() => _uploadFile(file: file, storageFile: storageFile));
   }
 
-  Future<String> uploadAudio(File file) async {
-    return _execute(() => _uploadFile(file, contentType: 'audio/m4a'));
+  Future<String> uploadAudio({
+    required File file,
+    required String storageFile,
+  }) async {
+    return _execute(
+      () => _uploadFile(
+        file: file,
+        storageFile: storageFile,
+        contentType: 'audio/m4a',
+      ),
+    );
   }
 
-  Future<String> updateImage(String oldPath, File newFile) async {
+  Future<String> updateImage({
+    required String oldPath,
+    required File newFile,
+    required String storageFile,
+  }) async {
     return _execute(() async {
-      await deleteFile(oldPath);
-      return uploadImage(newFile);
+      await deleteFile(path: oldPath, storageFile: storageFile);
+      return uploadImage(file: newFile, storageFile: storageFile);
     });
   }
 
-  Future<String> updateAudio(String oldPath, File newFile) async {
+  Future<String> updateAudio({
+    required String oldPath,
+    required File newFile,
+    required String storageFile,
+  }) async {
     return _execute(() async {
-      await deleteFile(oldPath);
-      return uploadAudio(newFile);
+      await deleteFile(path: oldPath, storageFile: storageFile);
+      return uploadAudio(file: newFile, storageFile: storageFile);
     });
   }
 
-  Future<void> deleteFile(String path) async {
+  Future<void> deleteFile({
+    required String path,
+    required String storageFile,
+  }) async {
     return _execute(() async {
       await _client.storage.from(storageFile).remove([path]);
     });
   }
 
-  String getFileUrl(String path) {
+  String getFileUrl({required String path, required String storageFile}) {
     return _client.storage.from(storageFile).getPublicUrl(path);
   }
 
   // ===================== Core Upload =====================
 
-  Future<String> _uploadFile(File file, {String? contentType}) async {
+  Future<String> _uploadFile({
+    required File file,
+    required String storageFile,
+    String? contentType,
+  }) async {
     final uuid = const Uuid().v4();
     final extension = file.path.split('.').last;
     final path = "public/$uuid.$extension";
@@ -59,7 +82,7 @@ class SupabaseStorage {
         .upload(
           path,
           file,
-         fileOptions: FileOptions(
+          fileOptions: FileOptions(
             contentType: contentType ?? 'application/octet-stream',
           ),
         );
