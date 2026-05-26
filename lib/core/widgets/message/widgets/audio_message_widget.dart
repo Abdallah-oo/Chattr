@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +11,7 @@ import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
 import 'package:messenger_clone0/core/widgets/audio/helper/audio_player_manager.dart';
 import 'package:messenger_clone0/core/widgets/audio/ui/painters/waveform_painter.dart';
 import 'package:messenger_clone0/core/widgets/custom_text.dart';
+import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AudioMessageWidget extends StatefulWidget {
@@ -55,9 +55,9 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget>
       }
 
       if (messageId != null) {
-        final localPath = await HiveService.getPrivateMessageLocalPath(
-          messageId,
-        );
+        final localPath = widget.audioMessage is PrivateMessageModel
+            ? await HiveService.getPrivateMessageLocalPath(messageId)
+            : await HiveService.getGroupMessageLocalPath(messageId);
 
         if (localPath != null && File(localPath).existsSync()) {
           await _player.setFilePath(localPath);
@@ -97,10 +97,15 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget>
       final localPath = '${dir.path}/audio_$messageId.m4a';
 
       if (File(localPath).existsSync()) {
-        await HiveService.savePrivateMessageLocalPath(
-          messageId: messageId,
-          localPath: localPath,
-        );
+        widget.audioMessage is PrivateMessageModel
+            ? await HiveService.savePrivateMessageLocalPath(
+                messageId: messageId,
+                localPath: localPath,
+              )
+            : await HiveService.saveGroupMessageLocalPath(
+                messageId: messageId,
+                localPath: localPath,
+              );
         return;
       }
 
@@ -108,10 +113,15 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget>
 
       await File(localPath).writeAsBytes(response.bodyBytes);
 
-      await HiveService.savePrivateMessageLocalPath(
-        messageId: messageId,
-        localPath: localPath,
-      );
+      widget.audioMessage is PrivateMessageModel
+          ? await HiveService.savePrivateMessageLocalPath(
+              messageId: messageId,
+              localPath: localPath,
+            )
+          : await HiveService.saveGroupMessageLocalPath(
+              messageId: messageId,
+              localPath: localPath,
+            );
     } catch (e) {
       if (!mounted) return;
       final message = e is http.ClientException
@@ -323,11 +333,11 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget>
                 children: [
                   CustomText(
                     text: formatTime(position),
-                    style: AppTextStyles.bodySmall,
+                         style: AppTextStyles.bodySmall,
                   ),
                   CustomText(
                     text: formatTime(duration),
-                    style: AppTextStyles.bodySmall,
+                     style: AppTextStyles.bodySmall,
                   ),
                 ],
               ),

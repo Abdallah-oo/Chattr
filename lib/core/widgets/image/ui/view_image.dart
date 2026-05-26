@@ -67,7 +67,7 @@ class _ViewImageState extends State<ViewImage> {
                               gaplessPlayback: true,
                               cacheWidth:
                                   800, // يحط الصورة في الـ image cache بـ resolution معقولة
-                              frameBuilder: (_, child, frame, __) =>
+                              frameBuilder: (_, child, frame, _) =>
                                   frame == null ? _Placeholder() : child,
                             ),
                           )

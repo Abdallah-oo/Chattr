@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:messenger_clone0/core/cache/users_cache.dart';
 import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
+import 'package:messenger_clone0/features/group_chats/data/models/group_message_model.dart';
+import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
 import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
 import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 
@@ -110,5 +112,85 @@ class HiveService {
     return msg?.localPath;
   }
 
- 
+ //--------------- group chats ----------------
+
+
+   static Future<void> saveGroup(GroupModel group) async {
+    final box = Hive.box<GroupModel>(groupsBoxName);
+    await box.put(group.id, group);
+  }
+
+  static Future<List<GroupModel>> getGroups() async {
+    final box = Hive.box<GroupModel>(groupsBoxName);
+    return box.values.toList();
+  }
+
+  static Future<void> replaceGroups(List<GroupModel> groups) async {
+    final box = Hive.box<GroupModel>(groupsBoxName);
+    await box.clear();
+    for (var g in groups) {
+      await box.put(g.id, g);
+    }
+  }
+
+  static Future<void> clearGroups() async {
+    final box = Hive.box<GroupModel>(groupsBoxName);
+    await box.clear();
+  }
+
+  //--------------- group messages ----------------
+  static Future<void> saveGroupMessage(GroupMessageModel message) async {
+    final box = Hive.box<GroupMessageModel>(groupsMessagesBoxName);
+    final key = message.messageId ?? message.tempId;
+    await box.put(key, message);
+  }
+
+  static Future<void> deleteGroupMessage(String key) async {
+    final box = Hive.box<GroupMessageModel>(groupsMessagesBoxName);
+    await box.delete(key);
+  }
+
+  static Future<List<GroupMessageModel>> getGroupMessages(
+    String groupId, {
+    int limit = 30,
+  }) async {
+    final box = Hive.box<GroupMessageModel>(groupsMessagesBoxName);
+    final messages = box.values.where((m) => m.groupId == groupId).toList();
+    messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    if (messages.length <= limit) return messages;
+    return messages.sublist(messages.length - limit);
+  }
+
+  static Future<GroupMessageModel?> getGroupMessage(String messageId) async {
+    final box = Hive.box<GroupMessageModel>(groupsMessagesBoxName);
+    return box.get(messageId);
+  }
+
+  static Future<void> saveGroupMessageLocalPath({
+    required String messageId,
+    required String localPath,
+  }) async {
+    final box = Hive.box<GroupMessageModel>(groupsMessagesBoxName);
+    final msg = box.get(messageId);
+
+    if (msg == null) return;
+    await box.put(messageId, msg.copyWith(localPath: localPath));
+  }
+
+  /// جيب الـ local path
+  static Future<String?> getGroupMessageLocalPath(String messageId) async {
+    final box = Hive.box<GroupMessageModel>(groupsMessagesBoxName);
+    final msg = box.get(messageId);
+    return msg?.localPath;
+  }
+
+  /// ---------------- Clear All ----------------
+
+  static Future<void> clearAll() async {
+    await Hive.box<UserModel>(userBoxName).clear();
+    await Hive.box<PrivateChatModel>(privateChatsBoxName).clear();
+    await Hive.box<PrivateMessageModel>(privateMessageBoxName).clear();
+    await Hive.box<GroupModel>(groupsBoxName).clear();
+    await Hive.box<GroupMessageModel>(groupsMessagesBoxName).clear();
+  }
 }

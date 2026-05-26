@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:messenger_clone0/core/themes/app_colors.dart';
 import 'package:messenger_clone0/features/contacts/presentation/views/contacts_view.dart';
+import 'package:messenger_clone0/features/group_chats/presentation/views/groups_view/views/groups_view.dart';
 import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/private_chats_view.dart';
 
 class Root extends StatefulWidget {
@@ -14,17 +16,22 @@ class Root extends StatefulWidget {
 class _RootState extends State<Root> {
   int currentIndex = 0;
 
-  final List<Widget> pages = const [ContactsView(),
-  PrivateChatsView()
+  final List<Widget> pages = const [
+    PrivateChatsView(),
+    GroupsView(),
+
+    ContactsView(),
   ];
 
   final List<_NavItem> items = const [
+    _NavItem(Icons.chat, Icons.chat_outlined, "Chats"),
+
+    _NavItem(CupertinoIcons.group_solid, CupertinoIcons.group, "Groups"),
     _NavItem(
       Icons.contact_page_rounded,
       Icons.contact_page_outlined,
       'contacts',
     ),
-    _NavItem(Icons.chat, Icons.chat_outlined, "Chats"),
   ];
 
   void onTap(int index) {
