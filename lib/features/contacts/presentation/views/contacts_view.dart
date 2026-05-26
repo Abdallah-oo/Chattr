@@ -8,6 +8,9 @@ import 'package:messenger_clone0/features/contacts/data/repos/add_to_contacts_re
 import 'package:messenger_clone0/features/contacts/presentation/cubits/add_to_contacts_cubit/add_to_contacts_cubit.dart';
 import 'package:messenger_clone0/features/contacts/presentation/views/contacts_view_body.dart';
 import 'package:messenger_clone0/features/contacts/presentation/views/widgets/add_contact_bottom_sheet.dart';
+import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo/add_friend_repo.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/add_friend_cubit/add_friend_cubit.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
 
 class ContactsView extends StatelessWidget {
   const ContactsView({super.key});
@@ -46,7 +49,10 @@ class ContactsView extends StatelessWidget {
           child: MultiBlocProvider(
             providers: [
               BlocProvider(create: (_) => SearchCubit()),
-              
+              BlocProvider(
+                create: (context) => AddFriendCubit(getIt<AddFriendRepo>()),
+              ),
+              BlocProvider.value(value: getIt<FetchPrivateChatsCubit>()),
             ],
             child: const ContactsViewBody(),
           ),

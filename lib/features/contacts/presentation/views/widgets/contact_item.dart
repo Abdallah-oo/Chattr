@@ -1,11 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:messenger_clone0/core/cubits/fetch_current_user_data/fetch_current_user_data_cubit.dart';
+import 'package:messenger_clone0/core/routing/router_models.dart';
+import 'package:messenger_clone0/core/routing/routes.dart';
 import 'package:messenger_clone0/core/themes/app_colors.dart';
 import 'package:messenger_clone0/core/themes/app_text_styles.dart';
 import 'package:messenger_clone0/core/widgets/custom_text.dart';
 import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
+import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/add_friend_cubit/add_friend_cubit.dart';
+import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
 
 class ContactItem extends StatelessWidget {
   const ContactItem({super.key, required this.user});
@@ -27,15 +35,58 @@ class ContactItem extends StatelessWidget {
             const Gap(10),
             _UserInfo(name: user.name, email: user.email),
             const Spacer(),
-            _MessageButton(
-              onTap: () {
-                // TODO: navigate to chat
+            BlocBuilder<FetchPrivateChatsCubit, FetchPrivateChatsState>(
+              builder: (context, state) {
+                List<PrivateChatModel> chats = [];
+
+                if (state is FetchPrivateChatsSuccess) {
+                  chats = state.chats;
+                }
+
+                return _MessageButton(
+                  onTap: () => _navigateToChat(
+                    context: context,
+                    user: user,
+                    chats: chats,
+                  ),
+                );
               },
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+void _navigateToChat({
+  required BuildContext context,
+  required UserModel user,
+  required List<PrivateChatModel> chats,
+}) async {
+  final hasChat = chats.any((chat) => chat.friend?.id == user.id);
+
+  if (!hasChat) {
+    final addFriendCubit = context.read<AddFriendCubit>();
+    await addFriendCubit.addFriend(email: user.email!);
+    if (addFriendCubit.state is AddFriendSuccess) {
+      final chat = (addFriendCubit.state as AddFriendSuccess).chat;
+      final currentUser = context.read<FetchCurrentUserDataCubit>().currentUser;
+      final PrivateChatParams chatData = PrivateChatParams(
+        chatData: chat,
+        curruntUser: currentUser!,
+      );
+
+      context.push(Routes.privateChatsBody, extra: chatData);
+    }
+  } else {
+    final chat = chats.firstWhere((chat) => chat.friend?.id == user.id);
+    final currentUser = context.read<FetchCurrentUserDataCubit>().currentUser;
+    final PrivateChatParams chatData = PrivateChatParams(
+      chatData: chat,
+      curruntUser: currentUser!,
+    );
+    context.push(Routes.privateChatsBody, extra: chatData);
   }
 }
 
@@ -93,9 +144,18 @@ class _MessageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: const Icon(Icons.message, color: AppColors.primary),
+    return BlocBuilder<AddFriendCubit, AddFriendState>(
+      buildWhen: (prev, curr) =>
+          prev is AddFriendLoading || curr is AddFriendLoading,
+      builder: (context, state) {
+        final bool isLoadind = state is AddFriendLoading;
+        return InkWell(
+          onTap: onTap,
+          child: isLoadind
+              ? const CircularProgressIndicator(color: AppColors.primary)
+              : Icon(Icons.message, color: AppColors.primary),
+        );
+      },
     );
   }
 }
