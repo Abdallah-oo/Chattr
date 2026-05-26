@@ -17,7 +17,6 @@ class AuthService {
         email: email,
         password: password,
       );
-      print(res);
       return res.user!;
     } catch (e) {
       throw _handleError(e);
