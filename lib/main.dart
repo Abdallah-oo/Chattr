@@ -8,7 +8,7 @@ import 'package:messenger_clone0/features/group_chats/data/models/group_message_
 import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
 import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
 import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
-import 'package:messenger_clone0/messenger_clone_app.dart';
+import 'package:messenger_clone0/chattr_app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -40,5 +40,5 @@ void main() async {
   await Hive.openBox<GroupModel>(HiveService.groupsBoxName);
   await Hive.openBox<GroupMessageModel>(HiveService.groupsMessagesBoxName);
 
-  runApp(const MessengerCloneApp());
+  runApp(const ChattrApp());
 }

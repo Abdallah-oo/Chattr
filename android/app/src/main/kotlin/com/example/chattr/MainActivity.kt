@@ -1,4 +1,4 @@
-package com.example.messenger_clone0
+package com.abdallah.chattr
 
 import io.flutter.embedding.android.FlutterActivity
 
