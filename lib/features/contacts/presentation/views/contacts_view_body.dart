@@ -1,13 +1,13 @@
+import 'package:chattr/core/cubits/search/search_cubit.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/widgets/custom_text_field.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
+import 'package:chattr/features/contacts/presentation/views/widgets/contact_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:messenger_clone0/core/cubits/search/search_cubit.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/widgets/custom_text_field.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
-import 'package:messenger_clone0/features/contacts/presentation/views/widgets/contact_item.dart';
 
 class ContactsViewBody extends StatefulWidget {
   const ContactsViewBody({super.key});
@@ -49,15 +49,14 @@ class _ContactsViewBodyState extends State<ContactsViewBody> {
   Widget _buildBody(BuildContext context, List<UserModel> contacts) {
     return Column(
       children: [
-        if (contacts.isNotEmpty)
-        Gap(20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _SearchField(
-              controller: _searchController,
-              contacts: contacts,
-            ),
+        if (contacts.isNotEmpty) Gap(20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _SearchField(
+            controller: _searchController,
+            contacts: contacts,
           ),
+        ),
         const Gap(10),
         Expanded(child: _ContactsList(contacts: contacts)),
       ],
@@ -115,7 +114,7 @@ class _ContactsList extends StatelessWidget {
     return BlocBuilder<SearchCubit, SearchState>(
       builder: (context, state) {
         final filtered = state is SearchActive
-            ? state. filteredList.cast<UserModel>()
+            ? state.filteredList.cast<UserModel>()
             : contacts;
 
         return ListView.builder(

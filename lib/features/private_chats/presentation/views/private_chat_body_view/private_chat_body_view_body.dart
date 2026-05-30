@@ -1,17 +1,17 @@
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/extensions/responsive.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/core/widgets/message/chat_message_list.dart';
+import 'package:chattr/core/widgets/message/send_message_field.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/core/widgets/message/chat_message_list.dart';
-import 'package:messenger_clone0/core/widgets/message/send_message_field.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 
 class PrivateChatBodyViewBody extends StatefulWidget {
   const PrivateChatBodyViewBody({

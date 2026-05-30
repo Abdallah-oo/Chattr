@@ -1,7 +1,7 @@
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
 
 class CustomTextField extends StatefulWidget {
   const CustomTextField({

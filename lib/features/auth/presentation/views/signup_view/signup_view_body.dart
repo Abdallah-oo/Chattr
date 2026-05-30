@@ -1,19 +1,19 @@
+import 'package:chattr/core/cubits/pick_image/pick_image_cubit.dart';
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/extensions/responsive.dart';
+import 'package:chattr/core/utils/validators/auth_validation.dart';
+import 'package:chattr/core/widgets/custom_button.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/core/widgets/custom_text_field.dart';
+import 'package:chattr/core/widgets/image/ui/pick_image.dart';
+import 'package:chattr/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:messenger_clone0/core/cubits/pick_image/pick_image_cubit.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
-import 'package:messenger_clone0/core/utils/validators/auth_validation.dart';
-import 'package:messenger_clone0/core/widgets/custom_button.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/core/widgets/custom_text_field.dart';
-import 'package:messenger_clone0/core/widgets/image/ui/pick_image.dart';
-import 'package:messenger_clone0/features/auth/presentation/cubits/auth_cubit.dart';
 
 class SignupViewBody extends StatefulWidget {
   const SignupViewBody({super.key});

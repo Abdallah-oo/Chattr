@@ -1,14 +1,14 @@
+import 'package:chattr/chattr_app.dart';
+import 'package:chattr/core/services/hive/hive_services.dart';
+import 'package:chattr/core/services/supabase/supabase_constants.dart';
+import 'package:chattr/core/utils/di/get_it.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_message_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_model.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:messenger_clone0/core/services/hive/hive_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_constants.dart';
-import 'package:messenger_clone0/core/utils/di/get_it.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_message_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
-import 'package:messenger_clone0/messenger_clone_app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -40,5 +40,5 @@ void main() async {
   await Hive.openBox<GroupModel>(HiveService.groupsBoxName);
   await Hive.openBox<GroupMessageModel>(HiveService.groupsMessagesBoxName);
 
-  runApp(const MessengerCloneApp());
+  runApp(const ChattrApp());
 }

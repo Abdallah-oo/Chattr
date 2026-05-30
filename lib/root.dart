@@ -1,10 +1,11 @@
 import 'dart:ui';
+
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/features/contacts/presentation/views/contacts_view.dart';
+import 'package:chattr/features/group_chats/presentation/views/groups_view/views/groups_view.dart';
+import 'package:chattr/features/private_chats/presentation/views/private_chats_view/private_chats_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/features/contacts/presentation/views/contacts_view.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/views/groups_view/views/groups_view.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/private_chats_view.dart';
 
 class Root extends StatefulWidget {
   const Root({super.key});

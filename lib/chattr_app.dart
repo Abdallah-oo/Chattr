@@ -1,8 +1,8 @@
+import 'package:chattr/core/routing/router.dart';
 import 'package:flutter/material.dart';
-import 'package:messenger_clone0/core/routing/router.dart';
 
-class MessengerCloneApp extends StatelessWidget {
-  const MessengerCloneApp({super.key});
+class ChattrApp extends StatelessWidget {
+  const ChattrApp({super.key});
 
   // This widget is the root of your application.
   @override

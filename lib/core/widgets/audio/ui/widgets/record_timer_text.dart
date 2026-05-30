@@ -1,6 +1,6 @@
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
 
 class RecordTimerText extends StatelessWidget {
   const RecordTimerText({
@@ -36,7 +36,7 @@ class RecordTimerText extends StatelessWidget {
           ),
           child: CustomText(
             align: TextAlign.center,
-         
+
             text: formatDuration(seconds),
             style: AppTextStyles.bodyMedium,
           ),

@@ -1,11 +1,12 @@
 import 'dart:io';
+
+import 'package:chattr/core/services/supabase/supabase_crud_services.dart';
+import 'package:chattr/core/services/supabase/supabase_error.dart';
+import 'package:chattr/core/services/supabase/supabase_storage.dart';
+import 'package:chattr/features/group_chats/data/models/group_members_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_model.dart';
+import 'package:chattr/features/group_chats/data/repos/create_group_repo/create_group_repo.dart';
 import 'package:dartz/dartz.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_crud_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_storage.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_members_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/create_group_repo/create_group_repo.dart';
 
 class CreateGroupRepoImpl implements CreateGroupRepo {
   const CreateGroupRepoImpl({
@@ -20,8 +21,11 @@ class CreateGroupRepoImpl implements CreateGroupRepo {
   @override
   Future<Either<SupabaseError, String>> uploadGroupImage(File imageFile) async {
     try {
-      final path = await _storage.uploadImage(file: imageFile,storageFile: 'group_image');
-      final url = _storage.getFileUrl(path: path,storageFile: 'group_image');
+      final path = await _storage.uploadImage(
+        file: imageFile,
+        storageFile: 'group_image',
+      );
+      final url = _storage.getFileUrl(path: path, storageFile: 'group_image');
       return right(url);
     } catch (e) {
       return left(SupabaseError(message: '$e'));

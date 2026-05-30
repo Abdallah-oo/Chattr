@@ -1,10 +1,10 @@
+import 'package:chattr/core/cubits/search/search_cubit.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/widgets/custom_text_field.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/cubits/search/search_cubit.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/widgets/custom_text_field.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
 
 
 class ChatSearchBar extends StatefulWidget {

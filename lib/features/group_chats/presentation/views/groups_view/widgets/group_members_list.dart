@@ -1,10 +1,10 @@
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/select_group_members_cubit/select_group_members_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/select_group_members_cubit/select_group_members_cubit.dart';
 
 class GroupMembersList extends StatelessWidget {
   const GroupMembersList({super.key, required this.myContacts});

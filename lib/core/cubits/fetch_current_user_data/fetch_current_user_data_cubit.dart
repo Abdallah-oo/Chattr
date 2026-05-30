@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
+import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
+import 'package:chattr/core/services/supabase/supabase_crud_services.dart';
+import 'package:chattr/core/services/supabase/supabase_error.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_crud_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 part 'fetch_current_user_data_state.dart';
 

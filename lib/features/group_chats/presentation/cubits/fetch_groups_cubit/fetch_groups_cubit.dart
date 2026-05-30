@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
+import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
+import 'package:chattr/features/group_chats/data/models/group_model.dart';
+import 'package:chattr/features/group_chats/data/repos/fetch_groups_repo/fetch_groups_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/fetch_groups_repo/fetch_groups_repo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'fetch_groups_state.dart';

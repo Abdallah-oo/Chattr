@@ -1,10 +1,10 @@
+import 'package:chattr/core/cubits/search/search_cubit.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
+import 'package:chattr/features/private_chats/presentation/views/private_chats_view/widgets/private_chats_list.dart';
+import 'package:chattr/features/private_chats/presentation/views/private_chats_view/widgets/private_chats_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:messenger_clone0/core/cubits/search/search_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/widgets/private_chats_list.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/widgets/private_chats_search_bar.dart';
 
 class PrivateChatsViewBody extends StatelessWidget {
   const PrivateChatsViewBody({super.key});

@@ -1,13 +1,12 @@
-
 import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chattr/core/services/hive/hive_services.dart';
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:messenger_clone0/core/services/hive/hive_services.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ImageMessageWidget extends StatefulWidget {

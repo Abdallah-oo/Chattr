@@ -1,11 +1,11 @@
+import 'package:chattr/core/widgets/message/chat_message_list.dart';
+import 'package:chattr/core/widgets/message/send_message_field.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_model.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/fetch_group_messages_cubit/fetch_group_messages_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:messenger_clone0/core/widgets/message/chat_message_list.dart';
-import 'package:messenger_clone0/core/widgets/message/send_message_field.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/fetch_group_messages_cubit/fetch_group_messages_cubit.dart';
 
 class GroupMessageViewBody extends StatefulWidget {
   const GroupMessageViewBody({

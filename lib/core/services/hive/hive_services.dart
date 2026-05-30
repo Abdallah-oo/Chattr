@@ -1,10 +1,11 @@
+import 'package:chattr/core/cache/users_cache.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_message_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_model.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
 import 'package:hive/hive.dart';
-import 'package:messenger_clone0/core/cache/users_cache.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_message_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
+
 
 
 class HiveService {

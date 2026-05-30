@@ -1,5 +1,5 @@
+import 'package:chattr/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
 
 abstract class AppTextStyles {
   // ===================== Display =====================

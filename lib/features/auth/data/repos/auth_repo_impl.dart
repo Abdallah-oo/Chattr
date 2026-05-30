@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:chattr/core/services/hive/hive_services.dart';
+import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
+import 'package:chattr/core/services/supabase/supabase_crud_services.dart';
+import 'package:chattr/core/services/supabase/supabase_error.dart';
+import 'package:chattr/core/services/supabase/supabase_storage.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/auth/data/repos/auth_repo.dart';
 import 'package:dartz/dartz.dart';
-import 'package:messenger_clone0/core/services/hive/hive_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_crud_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_storage.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/auth/data/repos/auth_repo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepoImpl implements AuthRepo {
@@ -48,8 +48,14 @@ class AuthRepoImpl implements AuthRepo {
     try {
       final respons = await _authService.signUp(email, password);
       final myUuid = _authService.currentUser!.id;
-      final path = await _storage.uploadImage(file: image,storageFile: 'users_image');
-      final imagePath = _storage.getFileUrl(path: path,storageFile: 'users_image');
+      final path = await _storage.uploadImage(
+        file: image,
+        storageFile: 'users_image',
+      );
+      final imagePath = _storage.getFileUrl(
+        path: path,
+        storageFile: 'users_image',
+      );
 
       ///user data as user model
       final UserModel data = UserModel(

@@ -1,21 +1,21 @@
+import 'package:chattr/core/cubits/pick_image/pick_image_cubit.dart';
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/validators/auth_validation.dart';
+import 'package:chattr/core/widgets/custom_appbar.dart';
+import 'package:chattr/core/widgets/custom_button.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/core/widgets/image/ui/pick_image.dart';
+import 'package:chattr/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/create_group_cubit/create_group_cubit.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/select_group_members_cubit/select_group_members_cubit.dart';
+import 'package:chattr/features/group_chats/presentation/views/groups_view/widgets/group_members_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:messenger_clone0/core/cubits/pick_image/pick_image_cubit.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/validators/auth_validation.dart';
-import 'package:messenger_clone0/core/widgets/custom_appbar.dart';
-import 'package:messenger_clone0/core/widgets/custom_button.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/core/widgets/image/ui/pick_image.dart';
-import 'package:messenger_clone0/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/create_group_cubit/create_group_cubit.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/select_group_members_cubit/select_group_members_cubit.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/views/groups_view/widgets/group_members_list.dart';
 
 class CreatGroup extends StatefulWidget {
   const CreatGroup({super.key, required this.contactsCubit});

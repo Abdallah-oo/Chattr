@@ -1,6 +1,7 @@
 import 'dart:io';
+
+import 'package:chattr/core/services/supabase/supabase_error.dart';
 import 'package:dartz/dartz.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
 
 abstract interface class CreateGroupRepo {
   Future<Either<SupabaseError, String>> uploadGroupImage(File imageFile);

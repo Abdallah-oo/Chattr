@@ -1,19 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chattr/core/cubits/fetch_current_user_data/fetch_current_user_data_cubit.dart';
+import 'package:chattr/core/routing/router_models.dart';
+import 'package:chattr/core/routing/routes.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_model.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:messenger_clone0/core/cubits/fetch_current_user_data/fetch_current_user_data_cubit.dart';
-import 'package:messenger_clone0/core/routing/router_models.dart';
-import 'package:messenger_clone0/core/routing/routes.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
 
 class Grouplist extends StatelessWidget {
   const Grouplist({super.key});

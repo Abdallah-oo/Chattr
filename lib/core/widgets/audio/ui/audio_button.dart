@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'dart:math' as math;
+
+import 'package:chattr/core/cubits/audio_cubit/audio_cubit.dart';
+import 'package:chattr/core/cubits/audio_cubit/audio_state.dart';
+import 'package:chattr/core/widgets/audio/ui/painters/dashed_ring_painter.dart';
+import 'package:chattr/core/widgets/audio/ui/widgets/pulse_ring.dart';
+import 'package:chattr/core/widgets/audio/ui/widgets/record_button.dart';
+import 'package:chattr/core/widgets/audio/ui/widgets/record_timer_text.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/cubits/audio_cubit/audio_cubit.dart';
-import 'package:messenger_clone0/core/cubits/audio_cubit/audio_state.dart';
-import 'package:messenger_clone0/core/widgets/audio/ui/painters/dashed_ring_painter.dart';
-import 'package:messenger_clone0/core/widgets/audio/ui/widgets/pulse_ring.dart';
-import 'package:messenger_clone0/core/widgets/audio/ui/widgets/record_button.dart';
-import 'package:messenger_clone0/core/widgets/audio/ui/widgets/record_timer_text.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 
 class AudioRecordButton extends StatefulWidget {
   final String chatId;

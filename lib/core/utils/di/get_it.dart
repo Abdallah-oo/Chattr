@@ -1,41 +1,41 @@
+import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
+import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
+import 'package:chattr/core/services/supabase/supabase_crud_services.dart';
+import 'package:chattr/core/services/supabase/supabase_storage.dart';
+import 'package:chattr/features/auth/data/repos/auth_repo.dart';
+import 'package:chattr/features/auth/data/repos/auth_repo_impl.dart';
+import 'package:chattr/features/contacts/data/repos/add_to_contacts_repo/add_to_contacts_repo.dart';
+import 'package:chattr/features/contacts/data/repos/add_to_contacts_repo/add_to_contacts_repo_impl.dart';
+import 'package:chattr/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo.dart';
+import 'package:chattr/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo_impl.dart';
+import 'package:chattr/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
+import 'package:chattr/features/group_chats/data/repos/add_and_remove_admin_repo/add_and_remove_admin_repo.dart';
+import 'package:chattr/features/group_chats/data/repos/add_and_remove_admin_repo/add_and_remove_admin_repo_impl.dart';
+import 'package:chattr/features/group_chats/data/repos/create_group_repo/create_group_repo.dart';
+import 'package:chattr/features/group_chats/data/repos/create_group_repo/create_group_repo_impl.dart';
+import 'package:chattr/features/group_chats/data/repos/delete_member_repo/delete_member_repo.dart';
+import 'package:chattr/features/group_chats/data/repos/delete_member_repo/delete_member_repo_impl.dart';
+import 'package:chattr/features/group_chats/data/repos/edit_group_data_repo/edit_group_data_repo.dart';
+import 'package:chattr/features/group_chats/data/repos/edit_group_data_repo/edit_group_data_repo_impl.dart';
+import 'package:chattr/features/group_chats/data/repos/fetch_group_messages_repo/fetch_group_messages_repo.dart';
+import 'package:chattr/features/group_chats/data/repos/fetch_group_messages_repo/fetch_group_messages_repo_impl.dart';
+import 'package:chattr/features/group_chats/data/repos/fetch_groups_repo/fetch_groups_repo.dart';
+import 'package:chattr/features/group_chats/data/repos/fetch_groups_repo/fetch_groups_repo_impl.dart';
+import 'package:chattr/features/group_chats/data/repos/send_group_message_repo/send_group_message_repo.dart';
+import 'package:chattr/features/group_chats/data/repos/send_group_message_repo/send_group_message_repo_impl.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/fetch_group_messages_cubit/fetch_group_messages_cubit.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
+import 'package:chattr/features/private_chats/data/repos/add_friend_repo/add_friend_repo.dart';
+import 'package:chattr/features/private_chats/data/repos/add_friend_repo/add_friend_repo_impl.dart';
+import 'package:chattr/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo.dart';
+import 'package:chattr/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo_impl.dart';
+import 'package:chattr/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo.dart';
+import 'package:chattr/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo_impl.dart';
+import 'package:chattr/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo.dart';
+import 'package:chattr/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo_impl.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:get_it/get_it.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_crud_services.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_storage.dart';
-import 'package:messenger_clone0/features/auth/data/repos/auth_repo.dart';
-import 'package:messenger_clone0/features/auth/data/repos/auth_repo_impl.dart';
-import 'package:messenger_clone0/features/contacts/data/repos/add_to_contacts_repo/add_to_contacts_repo.dart';
-import 'package:messenger_clone0/features/contacts/data/repos/add_to_contacts_repo/add_to_contacts_repo_impl.dart';
-import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo.dart';
-import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo_impl.dart';
-import 'package:messenger_clone0/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/add_and_remove_admin_repo/add_and_remove_admin_repo.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/add_and_remove_admin_repo/add_and_remove_admin_repo_impl.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/create_group_repo/create_group_repo.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/create_group_repo/create_group_repo_impl.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/delete_member_repo/delete_member_repo.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/delete_member_repo/delete_member_repo_impl.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/edit_group_data_repo/edit_group_data_repo.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/edit_group_data_repo/edit_group_data_repo_impl.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/fetch_group_messages_repo/fetch_group_messages_repo.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/fetch_group_messages_repo/fetch_group_messages_repo_impl.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/fetch_groups_repo/fetch_groups_repo.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/fetch_groups_repo/fetch_groups_repo_impl.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/send_group_message_repo/send_group_message_repo.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/send_group_message_repo/send_group_message_repo_impl.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/fetch_group_messages_cubit/fetch_group_messages_cubit.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo/add_friend_repo.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/add_friend_repo/add_friend_repo_impl.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo_impl.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_messages_repo/fetch_private_messages_repo_impl.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo_impl.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -104,11 +104,9 @@ void setUpGetIt() {
       storage: getIt<SupabaseStorage>(),
     ),
   );
-   //fetch contacts cubit
+  //fetch contacts cubit
   getIt.registerLazySingleton<FetchContactsCubit>(
-    () =>
-        FetchContactsCubit(getIt<FetchContactsRepo>(), getIt<AuthService>())
-          ,
+    () => FetchContactsCubit(getIt<FetchContactsRepo>(), getIt<AuthService>()),
   );
 
   // fetch private messages cubit
@@ -163,7 +161,9 @@ void setUpGetIt() {
   );
   // fetch group messages repo
   getIt.registerLazySingleton<FetchGroupMessagesRepo>(
-    () => FetchGroupMessagesRepoImpl(clientManager: getIt<SupabaseClientManager>()),
+    () => FetchGroupMessagesRepoImpl(
+      clientManager: getIt<SupabaseClientManager>(),
+    ),
   );
 
   //send group message repo
@@ -180,7 +180,7 @@ void setUpGetIt() {
       auth: getIt<AuthService>(),
       client: getIt<SupabaseClientManager>(),
       repo: getIt<FetchGroupsRepo>(),
-    )
+    ),
   );
 
   //fetch group messages cubit
@@ -191,7 +191,4 @@ void setUpGetIt() {
       repo: getIt<FetchGroupMessagesRepo>(),
     ),
   );
-
-
-
 }

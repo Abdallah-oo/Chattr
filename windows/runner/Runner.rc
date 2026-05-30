@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "messenger_clone0" "\0"
+            VALUE "CompanyName", "com.abdallah" "\0"
+            VALUE "FileDescription", "chattr" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "messenger_clone0" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "messenger_clone0.exe" "\0"
-            VALUE "ProductName", "messenger_clone0" "\0"
+            VALUE "InternalName", "chattr" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.abdallah. All rights reserved." "\0"
+            VALUE "OriginalFilename", "chattr.exe" "\0"
+            VALUE "ProductName", "chattr" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
