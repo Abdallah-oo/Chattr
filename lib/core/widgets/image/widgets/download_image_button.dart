@@ -1,8 +1,7 @@
+import 'package:chattr/core/cubits/download_image/download_image_cubit.dart';
+import 'package:chattr/core/utils/extensions/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/cubits/download_image/download_image_cubit.dart';
-import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
-
 
 class DownloadImageButton extends StatelessWidget {
   final String imageUrl;

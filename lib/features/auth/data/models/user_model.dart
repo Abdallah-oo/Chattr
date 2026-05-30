@@ -1,6 +1,5 @@
-
+import 'package:chattr/core/services/hive/hive_type_ids.dart';
 import 'package:hive/hive.dart';
-import 'package:messenger_clone0/core/services/hive/hive_type_ids.dart';
 
 part 'user_model.g.dart';
 
@@ -35,15 +34,15 @@ class UserModel {
 
   UserModel({
     required this.id,
-     this.name,
+    this.name,
 
-     this.email,
-     this.image,
-     this.about,
-     this.createdAt,
-     this.myContacts,
-     this.lastSeen,
-     this.isOnLine,
+    this.email,
+    this.image,
+    this.about,
+    this.createdAt,
+    this.myContacts,
+    this.lastSeen,
+    this.isOnLine,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {

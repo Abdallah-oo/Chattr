@@ -1,10 +1,9 @@
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -31,14 +30,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: leading,
       actions:
           actions ??
-          [
-            Icon(Icons.more_horiz_rounded, color: Colors.grey),
-            Gap(15),
-          ],
+          [Icon(Icons.more_horiz_rounded, color: Colors.grey), Gap(15)],
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(text: title, style: AppTextStyles.headlineSmall,),
+          CustomText(text: title, style: AppTextStyles.headlineSmall),
           ...(titleItems ?? []),
         ],
       ),
@@ -46,7 +42,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(
-   kToolbarHeight +5,
-  );
+  Size get preferredSize => Size.fromHeight(kToolbarHeight + 5);
 }

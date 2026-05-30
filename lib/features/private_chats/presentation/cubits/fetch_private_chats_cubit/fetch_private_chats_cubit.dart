@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
+import 'package:chattr/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/fetch_private_chats_repo/fetch_private_chat_repo.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'fetch_private_chats_state.dart';

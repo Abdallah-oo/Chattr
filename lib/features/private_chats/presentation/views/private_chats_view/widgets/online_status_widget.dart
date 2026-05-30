@@ -1,6 +1,6 @@
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
 
 class OnlineStatusWidget extends StatelessWidget {
   const OnlineStatusWidget({super.key, this.chatId});

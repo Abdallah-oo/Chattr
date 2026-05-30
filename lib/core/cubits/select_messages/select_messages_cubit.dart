@@ -1,7 +1,7 @@
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 
 part 'select_messages_state.dart';
 

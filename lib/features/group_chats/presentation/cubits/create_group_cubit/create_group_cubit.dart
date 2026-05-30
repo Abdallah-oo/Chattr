@@ -1,9 +1,10 @@
 import 'dart:io';
+
+import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/data/repos/create_group_repo/create_group_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/create_group_repo/create_group_repo.dart';
 
 part 'create_group_state.dart';
 
@@ -16,7 +17,7 @@ class CreateGroupCubit extends Cubit<CreateGroupState> {
   final CreateGroupRepo _repo;
   final AuthService _auth;
 
- Future<void> creatGroup({
+  Future<void> creatGroup({
     required String groupName,
     required File groupImageFile,
     required List<UserModel> members,

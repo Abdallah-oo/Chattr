@@ -1,16 +1,16 @@
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/validators/auth_validation.dart';
+import 'package:chattr/core/widgets/custom_button.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/core/widgets/custom_text_field.dart';
+import 'package:chattr/features/contacts/presentation/cubits/add_to_contacts_cubit/add_to_contacts_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/validators/auth_validation.dart';
-import 'package:messenger_clone0/core/widgets/custom_button.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/core/widgets/custom_text_field.dart';
-import 'package:messenger_clone0/features/contacts/presentation/cubits/add_to_contacts_cubit/add_to_contacts_cubit.dart';
 
 class AddContactBottomSheet extends StatefulWidget {
   const AddContactBottomSheet({super.key}); // ← شيلنا required this.context
@@ -104,7 +104,7 @@ class _AddContactBottomSheetState extends State<AddContactBottomSheet> {
                     hint: "Email",
                     borderColor: AppColors.border,
                     textStyle: AppTextStyles.bodySmall,
-                    validation: AuthValidation.email ,
+                    validation: AuthValidation.email,
                   ),
                   const Gap(10),
                   _AddContactButton(

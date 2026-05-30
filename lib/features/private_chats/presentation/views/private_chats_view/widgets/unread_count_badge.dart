@@ -1,8 +1,8 @@
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
 
 /// بياخد الـ unreadCount من الـ PrivateChatModel مباشرة —
 /// مش محتاج BlocBuilder خالص

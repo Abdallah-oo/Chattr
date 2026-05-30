@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/services/hive/hive_services.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/extensions/responsive.dart';
+import 'package:chattr/core/widgets/audio/helper/audio_player_manager.dart';
+import 'package:chattr/core/widgets/audio/ui/painters/waveform_painter.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/services/hive/hive_services.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
-import 'package:messenger_clone0/core/widgets/audio/helper/audio_player_manager.dart';
-import 'package:messenger_clone0/core/widgets/audio/ui/painters/waveform_painter.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AudioMessageWidget extends StatefulWidget {
@@ -333,11 +334,11 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget>
                 children: [
                   CustomText(
                     text: formatTime(position),
-                         style: AppTextStyles.bodySmall,
+                    style: AppTextStyles.bodySmall,
                   ),
                   CustomText(
                     text: formatTime(duration),
-                     style: AppTextStyles.bodySmall,
+                    style: AppTextStyles.bodySmall,
                   ),
                 ],
               ),

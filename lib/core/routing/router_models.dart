@@ -1,9 +1,11 @@
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_model.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
+
 
 //?private chats
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_model.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
+
 class PrivateChatParams {
   final PrivateChatModel chatData;
   final UserModel curruntUser;

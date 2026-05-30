@@ -1,12 +1,10 @@
+import 'package:chattr/core/services/supabase/supabase_error.dart';
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
 import 'package:dartz/dartz.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
 
 abstract interface class FetchPrivateMessagesRepo {
- Future<Either<SupabaseError, List<PrivateMessageModel>>> fetchInitialMessages({
-    required String chatId,
-    required int pageSize,
-  });
+  Future<Either<SupabaseError, List<PrivateMessageModel>>>
+  fetchInitialMessages({required String chatId, required int pageSize});
 
   /// جيب الصفحة التالية (pagination)
   Future<Either<SupabaseError, List<PrivateMessageModel>>> fetchMoreMessages({
@@ -16,7 +14,9 @@ abstract interface class FetchPrivateMessagesRepo {
   });
 
   /// حدّث الرسايل المحددة كـ read في DB
-  Future<Either<SupabaseError,Unit>> markMessagesAsRead(List<String> messageIds);
+  Future<Either<SupabaseError, Unit>> markMessagesAsRead(
+    List<String> messageIds,
+  );
 
   /// احذف رسايل (soft delete)
   Future<Either<SupabaseError, Unit>> deleteMessages(List<String> messageIds);
@@ -42,5 +42,7 @@ abstract interface class FetchPrivateMessagesRepo {
   Future<Either<String, Unit>> deleteMessageLocally(String messageId);
 
   /// جيب رسالة واحدة من الـ local cache
-  Future<Either<String, PrivateMessageModel?>> getLocalMessage(String messageId);
+  Future<Either<String, PrivateMessageModel?>> getLocalMessage(
+    String messageId,
+  );
 }

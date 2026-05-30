@@ -1,6 +1,7 @@
 import 'dart:io';
+
+import 'package:chattr/features/auth/data/repos/auth_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/features/auth/data/repos/auth_repo.dart';
 
 part 'auth_state.dart';
 

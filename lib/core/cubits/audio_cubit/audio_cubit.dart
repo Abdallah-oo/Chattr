@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:chattr/core/services/supabase/supabase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 

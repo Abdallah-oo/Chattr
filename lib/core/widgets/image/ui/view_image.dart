@@ -1,19 +1,18 @@
-
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chattr/core/cubits/download_image/download_image_cubit.dart';
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/routing/router_models.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/core/widgets/image/widgets/download_image_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:messenger_clone0/core/cubits/download_image/download_image_cubit.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/routing/router_models.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/core/widgets/image/widgets/download_image_button.dart';
 
 class ViewImage extends StatefulWidget {
   const ViewImage({super.key, required this.imageInfo});
@@ -114,22 +113,23 @@ class _ViewImageState extends State<ViewImage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomText(
-                           
                               text: widget.imageInfo.senderName,
                               style: AppTextStyles.bodySmall,
-                             
                             ),
-                
+
                             CustomText(
-                            
                               text: widget.imageInfo.messageData.createdAt
                                   .toString(),
-                                  style: AppTextStyles.bodySmall.copyWith(fontSize: 10),
+                              style: AppTextStyles.bodySmall.copyWith(
+                                fontSize: 10,
+                              ),
                             ),
                           ],
                         ),
                         Spacer(),
-                        DownloadImageButton(imageUrl: widget.imageInfo.imageUrl),
+                        DownloadImageButton(
+                          imageUrl: widget.imageInfo.imageUrl,
+                        ),
                         Gap(20),
                       ],
                     ),

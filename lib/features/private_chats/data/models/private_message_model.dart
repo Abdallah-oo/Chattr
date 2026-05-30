@@ -1,7 +1,6 @@
-
+import 'package:chattr/core/services/hive/hive_type_ids.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:hive/hive.dart';
-import 'package:messenger_clone0/core/services/hive/hive_type_ids.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
 import 'package:uuid/uuid.dart';
 
 part 'private_message_model.g.dart';

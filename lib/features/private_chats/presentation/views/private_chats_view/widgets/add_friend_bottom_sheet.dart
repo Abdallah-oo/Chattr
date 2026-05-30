@@ -1,16 +1,16 @@
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/validators/auth_validation.dart';
+import 'package:chattr/core/widgets/custom_button.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/core/widgets/custom_text_field.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/add_friend_cubit/add_friend_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/validators/auth_validation.dart';
-import 'package:messenger_clone0/core/widgets/custom_button.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/core/widgets/custom_text_field.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/add_friend_cubit/add_friend_cubit.dart';
 
 class AddFriendBottomSheet extends StatefulWidget {
   const AddFriendBottomSheet({super.key});
@@ -91,7 +91,7 @@ class _AddFriendBottomSheetState extends State<AddFriendBottomSheet> {
                   hint: 'Email',
                   borderColor: AppColors.inputBorder,
                   textStyle: AppTextStyles.bodySmall,
-                  validation: AuthValidation.email ,
+                  validation: AuthValidation.email,
                 ),
                 const Gap(10),
                 _AddButton(

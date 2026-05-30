@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:messenger_clone0/core/services/supabase/supabase_client_manager.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
+import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
+import 'package:chattr/core/services/supabase/supabase_error.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {

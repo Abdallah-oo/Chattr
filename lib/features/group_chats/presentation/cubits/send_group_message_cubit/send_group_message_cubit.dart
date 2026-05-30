@@ -1,13 +1,12 @@
-
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/data/models/group_message_model.dart';
+import 'package:chattr/features/group_chats/data/repos/send_group_message_repo/send_group_message_repo.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/fetch_group_messages_cubit/fetch_group_messages_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_message_model.dart';
-import 'package:messenger_clone0/features/group_chats/data/repos/send_group_message_repo/send_group_message_repo.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/fetch_group_messages_cubit/fetch_group_messages_cubit.dart';
 import 'package:uuid/uuid.dart';
 
 part 'send_group_message_state.dart';

@@ -1,17 +1,17 @@
+import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/extensions/responsive.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/core/widgets/message/widgets/audio_message_widget.dart';
+import 'package:chattr/core/widgets/message/widgets/image_message_widget.dart';
+import 'package:chattr/features/group_chats/data/models/group_message_model.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-import 'package:messenger_clone0/core/themes/app_colors.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/core/widgets/message/widgets/audio_message_widget.dart';
-import 'package:messenger_clone0/core/widgets/message/widgets/image_message_widget.dart';
-import 'package:messenger_clone0/features/group_chats/data/models/group_message_model.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 
 class MessageContent extends StatelessWidget {
   const MessageContent({
@@ -200,7 +200,7 @@ class MessageContent extends StatelessWidget {
                     right: !isMy ? null : 5,
                     left: isMy ? null : 5,
                     child: CustomText(
-               style: AppTextStyles.bodySmall.copyWith(
+                      style: AppTextStyles.bodySmall.copyWith(
                         color: message.isDeleted == true
                             ? Colors.grey
                             : Colors.white,
@@ -251,10 +251,9 @@ class MessageContent extends StatelessWidget {
                             ? Radius.circular(0)
                             : Radius.circular(10),
                       ),
-                             color: message.isDeleted == true
-                    ? AppColors.primary.withOpacity(0.6)
-                    : AppColors.primary,
-            
+                      color: message.isDeleted == true
+                          ? AppColors.primary.withOpacity(0.6)
+                          : AppColors.primary,
                     ),
                     constraints: BoxConstraints(
                       maxWidth: context.screenWidth * 0.5,
@@ -268,7 +267,7 @@ class MessageContent extends StatelessWidget {
                         message.isDeleted == true
                             ? CustomText(
                                 align: TextAlign.start,
-                               style: AppTextStyles.bodyMedium.copyWith(
+                                style: AppTextStyles.bodyMedium.copyWith(
                                   fontSize: message.isDeleted == true ? 12 : 14,
                                 ),
                                 text: " message has been deleted ⊘",
@@ -279,7 +278,7 @@ class MessageContent extends StatelessWidget {
                             ? ImageMessageWidget(imageMessage: message)
                             : CustomText(
                                 align: TextAlign.start,
-                                 style: AppTextStyles.headlineSmall.copyWith(
+                                style: AppTextStyles.headlineSmall.copyWith(
                                   fontSize: message.isDeleted == true ? 12 : 14,
                                   color: message.isDeleted == true
                                       ? Colors.grey
@@ -309,7 +308,7 @@ class MessageContent extends StatelessWidget {
                     right: !isMy ? null : 5,
                     left: isMy ? null : 5,
                     child: CustomText(
-                        style: AppTextStyles.bodySmall.copyWith(
+                      style: AppTextStyles.bodySmall.copyWith(
                         color: message.isDeleted == true
                             ? Colors.grey
                             : Colors.white,

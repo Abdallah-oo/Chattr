@@ -1,11 +1,11 @@
+import 'package:chattr/core/cubits/search/search_cubit.dart';
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
+import 'package:chattr/features/group_chats/presentation/views/groups_view/widgets/groups_list.dart';
+import 'package:chattr/features/group_chats/presentation/views/groups_view/widgets/groups_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:messenger_clone0/core/cubits/search/search_cubit.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/views/groups_view/widgets/groups_list.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/views/groups_view/widgets/groups_search_bar.dart';
 
 class GroupsViewBody extends StatelessWidget {
   const GroupsViewBody({super.key});

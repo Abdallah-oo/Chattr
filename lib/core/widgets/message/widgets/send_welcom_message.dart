@@ -1,13 +1,13 @@
+import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/utils/extensions/responsive.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/helpers/snack_bar.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/utils/extensions/responsive.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 
 class SendWelcomMessage extends StatelessWidget {
   const SendWelcomMessage({
@@ -21,82 +21,32 @@ class SendWelcomMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-    chatData is PrivateChatModel?
-    /// chat message
-    BlocListener<SendPrivateMessageCubit, SendPrivateMessageState>(
-      listener: (context, state) {
-        if (state is SendPrivateMessageFailure) {
-          CustomSnackBar.error(context, state.errorMessage);
-        }
-      },
-      child: Center(
-        child: BlocBuilder<SendPrivateMessageCubit, SendPrivateMessageState>(
-          buildWhen: (prev, curr) =>
-              curr is SendPrivateMessageLoading ||
-              prev is SendPrivateMessageLoading,
-          builder: (context, state) {
-            final isLoading = state is SendPrivateMessageLoading;
-            return InkWell(
-              onTap: isLoading
-                  ? null
-                  : () {
-                      context.read<SendPrivateMessageCubit>().sendTextMessage(
-                        message: "Hi! Let’s start talking 👋",
-                        chatId: chatData.chatId,
-                        sender: currentUser,
-                        senderId: currentUser.id!,
-                      );
-                    },
-              child: Card(
-                child: Padding(
-                  padding:  EdgeInsets.symmetric(
-                    horizontal: context.screenWidth*0.1,
-                    vertical: 25,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomText( text: "👋",style: AppTextStyles.displayLarge,),
-                      CustomText(
-                       
-                        text: " Say Hi! Let’s start talking",
-                        style: AppTextStyles.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    ):
-    //group chat
-     BlocListener<SendGroupMessageCubit, SendGroupMessageState>(
+    return chatData is PrivateChatModel
+        ?
+          /// chat message
+          BlocListener<SendPrivateMessageCubit, SendPrivateMessageState>(
             listener: (context, state) {
-              if (state is SendGroupMessageFailure) {
+              if (state is SendPrivateMessageFailure) {
                 CustomSnackBar.error(context, state.errorMessage);
               }
             },
             child: Center(
               child:
-                  BlocBuilder<SendGroupMessageCubit, SendGroupMessageState>(
+                  BlocBuilder<SendPrivateMessageCubit, SendPrivateMessageState>(
                     buildWhen: (prev, curr) =>
-                        curr is SendGroupMessageLoading ||
-                        prev is SendGroupMessageLoading,
+                        curr is SendPrivateMessageLoading ||
+                        prev is SendPrivateMessageLoading,
                     builder: (context, state) {
-                      final isLoading = state is SendGroupMessageLoading;
+                      final isLoading = state is SendPrivateMessageLoading;
                       return InkWell(
                         onTap: isLoading
                             ? null
                             : () {
                                 context
-                                    .read<SendGroupMessageCubit>()
+                                    .read<SendPrivateMessageCubit>()
                                     .sendTextMessage(
                                       message: "Hi! Let’s start talking 👋",
-                                      groupId: chatData.id,
+                                      chatId: chatData.chatId,
                                       sender: currentUser,
                                       senderId: currentUser.id!,
                                     );
@@ -127,9 +77,61 @@ class SendWelcomMessage extends StatelessWidget {
                     },
                   ),
             ),
+          )
+        :
+          //group chat
+          BlocListener<SendGroupMessageCubit, SendGroupMessageState>(
+            listener: (context, state) {
+              if (state is SendGroupMessageFailure) {
+                CustomSnackBar.error(context, state.errorMessage);
+              }
+            },
+            child: Center(
+              child: BlocBuilder<SendGroupMessageCubit, SendGroupMessageState>(
+                buildWhen: (prev, curr) =>
+                    curr is SendGroupMessageLoading ||
+                    prev is SendGroupMessageLoading,
+                builder: (context, state) {
+                  final isLoading = state is SendGroupMessageLoading;
+                  return InkWell(
+                    onTap: isLoading
+                        ? null
+                        : () {
+                            context
+                                .read<SendGroupMessageCubit>()
+                                .sendTextMessage(
+                                  message: "Hi! Let’s start talking 👋",
+                                  groupId: chatData.id,
+                                  sender: currentUser,
+                                  senderId: currentUser.id!,
+                                );
+                          },
+                    child: Card(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.screenWidth * 0.1,
+                          vertical: 25,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomText(
+                              text: "👋",
+                              style: AppTextStyles.displayLarge,
+                            ),
+                            CustomText(
+                              text: " Say Hi! Let’s start talking",
+                              style: AppTextStyles.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           );
-  
-  
-  
   }
 }

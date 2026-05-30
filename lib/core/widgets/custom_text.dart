@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
 
 class CustomText extends StatelessWidget {
   const CustomText({

@@ -1,7 +1,7 @@
+import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_auth_services.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/contacts/data/repos/fetch_contacts_repo/fetch_contacts_repo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'fetch_contacts_state.dart';

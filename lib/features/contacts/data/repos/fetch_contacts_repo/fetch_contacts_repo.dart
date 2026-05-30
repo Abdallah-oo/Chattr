@@ -1,6 +1,6 @@
+import 'package:chattr/core/services/supabase/supabase_error.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:dartz/dartz.dart';
-import 'package:messenger_clone0/core/services/supabase/supabase_error.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class FetchContactsRepo {

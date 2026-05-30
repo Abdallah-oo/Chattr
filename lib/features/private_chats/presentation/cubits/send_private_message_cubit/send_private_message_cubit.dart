@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
+import 'package:chattr/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_message_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:uuid/uuid.dart';
+
 part 'send_private_message_state.dart';
 
 class SendPrivateMessageCubit extends Cubit<SendPrivateMessageState> {

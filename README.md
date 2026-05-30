@@ -1,4 +1,4 @@
-# messenger_clone0
+# chattr
 
 A new Flutter project.
 

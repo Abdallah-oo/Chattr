@@ -1,20 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chattr/core/cubits/fetch_current_user_data/fetch_current_user_data_cubit.dart';
+import 'package:chattr/core/cubits/search/search_cubit.dart';
+import 'package:chattr/core/routing/router_models.dart';
+import 'package:chattr/core/routing/routes.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
+import 'package:chattr/features/private_chats/presentation/views/private_chats_view/widgets/unread_count_badge.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
-import 'package:messenger_clone0/core/cubits/fetch_current_user_data/fetch_current_user_data_cubit.dart';
-import 'package:messenger_clone0/core/cubits/search/search_cubit.dart';
-import 'package:messenger_clone0/core/routing/router_models.dart';
-import 'package:messenger_clone0/core/routing/routes.dart';
-import 'package:messenger_clone0/core/themes/app_text_styles.dart';
-import 'package:messenger_clone0/core/widgets/custom_text.dart';
-import 'package:messenger_clone0/features/auth/data/models/user_model.dart';
-import 'package:messenger_clone0/features/private_chats/data/models/private_chat_model.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
-import 'package:messenger_clone0/features/private_chats/presentation/views/private_chats_view/widgets/unread_count_badge.dart';
 
 class PrivateChatsList extends StatelessWidget {
   const PrivateChatsList({super.key});
