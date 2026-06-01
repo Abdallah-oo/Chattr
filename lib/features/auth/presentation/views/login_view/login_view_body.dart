@@ -29,7 +29,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
   @override
   void initState() {
     super.initState();
-    _emailController = TextEditingController(text: "test@gmail.com");
+    _emailController = TextEditingController(text: "@gmail.com");
     _passwordController = TextEditingController(text: "123456789");
   }
 

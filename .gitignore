@@ -53,3 +53,4 @@ app.*.map.json
 
 *.hive
 *.lock
+lib/core/services/supabase/supabase_constants.dart

@@ -1,5 +1,7 @@
 import 'package:chattr/core/cubits/search/search_cubit.dart';
 import 'package:chattr/core/themes/app_colors.dart';
+import 'package:chattr/core/themes/app_text_styles.dart';
+import 'package:chattr/core/widgets/custom_text.dart';
 import 'package:chattr/core/widgets/custom_text_field.dart';
 import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:chattr/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
@@ -47,20 +49,29 @@ class _ContactsViewBodyState extends State<ContactsViewBody> {
   }
 
   Widget _buildBody(BuildContext context, List<UserModel> contacts) {
-    return Column(
-      children: [
-        if (contacts.isNotEmpty) Gap(20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _SearchField(
-            controller: _searchController,
-            contacts: contacts,
-          ),
-        ),
-        const Gap(10),
-        Expanded(child: _ContactsList(contacts: contacts)),
-      ],
-    );
+    return contacts.isEmpty
+        ? const Center(
+            child: CustomText(
+              text: '✆ No contacts yet',
+              style: AppTextStyles.headlineMedium,
+            ),
+          )
+        : Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                child: _SearchField(
+                  controller: _searchController,
+                  contacts: contacts,
+                ),
+              ),
+              const Gap(10),
+              Expanded(child: _ContactsList(contacts: contacts)),
+            ],
+          );
   }
 }
 
