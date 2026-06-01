@@ -35,6 +35,16 @@ class Grouplist extends StatelessWidget {
 
         if (state is FetchGroupsSuccess) {
           final List<GroupModel> myGroups = state.groups;
+           if (myGroups.isEmpty) {
+            return const SliverFillRemaining(
+              child: Center(
+                child: CustomText(
+                  text: '👥 No Groups yet ',
+                  style: AppTextStyles.headlineMedium,
+                ),
+              ),
+            );
+          }
 
           return SliverList(
             delegate: SliverChildBuilderDelegate(childCount: myGroups.length, (
