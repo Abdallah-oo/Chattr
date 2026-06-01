@@ -20,7 +20,7 @@ void main() async {
   setUpGetIt();
   await Supabase.initialize(
     url: SupabaseConstants.url,
-    anonKey: SupabaseConstants.anonKey,
+    anonKey: SupabaseConstants.publishKey,
   );
 
   Hive.registerAdapter(UserModelAdapter());
