@@ -42,22 +42,20 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          IndexedStack(index: currentIndex, children: pages),
-          Positioned(
-            bottom: 20,
-            left: 14,
-            right: 14,
-            child: _ModernNavBar(
-              currentIndex: currentIndex,
-              items: items,
-              onTap: onTap,
-            ),
+    return Stack(
+      children: [
+        IndexedStack(index: currentIndex, children: pages),
+        Positioned(
+          bottom: 20,
+          left: 14,
+          right: 14,
+          child: _ModernNavBar(
+            currentIndex: currentIndex,
+            items: items,
+            onTap: onTap,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
