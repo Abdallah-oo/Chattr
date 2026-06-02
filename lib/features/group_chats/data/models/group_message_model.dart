@@ -137,6 +137,7 @@ class GroupMessageModel {
     DateTime? createdAt,
     int? mediaDuration,
     GroupMessageStatus? status,
+    UserModel?sender,
     String? content,
     bool? isDeleted,
   }) {
@@ -152,7 +153,7 @@ class GroupMessageModel {
       createdAt: createdAt ?? this.createdAt,
       isDeleted: isDeleted ?? this.isDeleted,
       localPath: localPath ?? this.localPath,
-      sender: sender,
+      sender: sender?? this.sender,
     );
   }
 }
