@@ -16,12 +16,12 @@ import 'package:intl/intl.dart';
 class MessageContent extends StatelessWidget {
   const MessageContent({
     super.key,
-    required this.isMy,
+    required this.isMe,
     required this.message,
     required this.chatId,
   });
 
-  final bool isMy;
+  final bool isMe;
   final dynamic message;
   final String chatId;
 
@@ -104,7 +104,7 @@ class MessageContent extends StatelessWidget {
           //?private message content
           Row(
             children: [
-              if ((isMy) &&
+              if ((isMe) &&
                   (status == PrivateMessageStatus.failed ||
                       status == PrivateMessageStatus.deleteFailed ||
                       status == PrivateMessageStatus.editingFaild)) ...[
@@ -130,10 +130,10 @@ class MessageContent extends StatelessWidget {
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),
-                        bottomRight: isMy
+                        bottomRight: isMe
                             ? Radius.circular(10)
                             : Radius.circular(0),
-                        bottomLeft: isMy
+                        bottomLeft: isMe
                             ? Radius.circular(0)
                             : Radius.circular(10),
                       ),
@@ -145,7 +145,7 @@ class MessageContent extends StatelessWidget {
                       maxWidth: context.screenWidth * 0.5,
                     ),
                     child: Column(
-                      crossAxisAlignment: isMy
+                      crossAxisAlignment: isMe
                           ? CrossAxisAlignment.start
                           : CrossAxisAlignment.end,
                       mainAxisSize: MainAxisSize.min,
@@ -179,11 +179,11 @@ class MessageContent extends StatelessWidget {
                                 text: message.content,
                                 maxLines: 1024,
                               ),
-                        Gap(isMy ? 10 : 20),
+                        Gap(isMe ? 10 : 20),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            !isMy
+                            !isMe
                                 ? SizedBox.shrink()
                                 : message.isDeleted == true
                                 ? SizedBox.shrink()
@@ -197,8 +197,8 @@ class MessageContent extends StatelessWidget {
 
                   Positioned(
                     bottom: 8,
-                    right: !isMy ? null : 5,
-                    left: isMy ? null : 5,
+                    right: !isMe ? null : 5,
+                    left: isMe ? null : 5,
                     child: CustomText(
                       style: AppTextStyles.bodySmall.copyWith(
                         color: message.isDeleted == true
@@ -218,7 +218,7 @@ class MessageContent extends StatelessWidget {
           //?group message content
           Row(
             children: [
-              if ((isMy) &&
+              if ((isMe) &&
                   (status == GroupMessageStatus.failed ||
                       status == GroupMessageStatus.deleteFailed ||
                       status == GroupMessageStatus.editingFaild)) ...[
@@ -244,10 +244,10 @@ class MessageContent extends StatelessWidget {
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),
-                        bottomRight: isMy
+                        bottomRight: isMe
                             ? Radius.circular(10)
                             : Radius.circular(0),
-                        bottomLeft: isMy
+                        bottomLeft: isMe
                             ? Radius.circular(0)
                             : Radius.circular(10),
                       ),
@@ -259,11 +259,23 @@ class MessageContent extends StatelessWidget {
                       maxWidth: context.screenWidth * 0.5,
                     ),
                     child: Column(
-                      crossAxisAlignment: isMy
+                      crossAxisAlignment: isMe
                           ? CrossAxisAlignment.start
                           : CrossAxisAlignment.end,
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if(!isMe)...[
+                          Gap(2),
+                          CustomText(
+                            align: TextAlign.start,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              fontSize: 9
+                            ),
+                            text: message.sender?.name ?? "Unknown",
+                          ),
+                              Gap(4),
+
+                        ],
                         message.isDeleted == true
                             ? CustomText(
                                 align: TextAlign.start,
@@ -287,11 +299,11 @@ class MessageContent extends StatelessWidget {
                                 text: message.content,
                                 maxLines: 1024,
                               ),
-                        Gap(isMy ? 10 : 20),
+                        Gap(isMe ? 10 : 20),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            !isMy
+                            !isMe
                                 ? SizedBox.shrink()
                                 : message.isDeleted == true
                                 ? SizedBox.shrink()
@@ -305,8 +317,8 @@ class MessageContent extends StatelessWidget {
 
                   Positioned(
                     bottom: 8,
-                    right: !isMy ? null : 5,
-                    left: isMy ? null : 5,
+                    right: !isMe ? null : 5,
+                    left: isMe ? null : 5,
                     child: CustomText(
                       style: AppTextStyles.bodySmall.copyWith(
                         color: message.isDeleted == true
