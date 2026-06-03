@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -27,19 +25,19 @@ class DownloadImageCubit extends Cubit<DownloadImageState> {
   String _handleDioError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
-        return "انتهت مهلة الاتصال";
+        return "Connection timeout";
 
       case DioExceptionType.receiveTimeout:
-        return "التحميل استغرق وقت طويل";
+        return "Request took too long";
 
       case DioExceptionType.badResponse:
-        return "فشل تحميل الصورة من السيرفر";
+        return "Failed to load image from server";
 
       case DioExceptionType.connectionError:
-        return "تأكد من اتصال الإنترنت";
+        return "Check your internet connection";
 
       default:
-        return "حدث خطأ غير متوقع";
+        return "An unexpected error occurred";
     }
   }
 
@@ -62,7 +60,7 @@ class DownloadImageCubit extends Cubit<DownloadImageState> {
 
     try {
       if (!_isValidImageUrl(imageUrl)) {
-        emit(DownloadImagefailure(errorMessage: "رابط الصورة غير صالح"));
+        emit(DownloadImagefailure(errorMessage: 'The image link is invalid'));
         return;
       }
 
@@ -72,7 +70,8 @@ class DownloadImageCubit extends Cubit<DownloadImageState> {
       if (permissionStatus == GalleryPermissionStatus.permanentlyDenied) {
         emit(
           DownloadImagefailure(
-            errorMessage: "تم رفض الصلاحية نهائياً، فعلها من الإعدادات",
+            errorMessage:
+                "Permission permanently denied. Please enable it in Settings",
           ),
         );
         return;
@@ -81,7 +80,7 @@ class DownloadImageCubit extends Cubit<DownloadImageState> {
       final hasAccess = await Gal.hasAccess();
 
       if (!hasAccess) {
-        emit(DownloadImagefailure(errorMessage: "تم رفض صلاحية الوصول للصور"));
+        emit(DownloadImagefailure(errorMessage: "Permission denied. Please enable it in Settings"));
         return;
       }
 
@@ -89,6 +88,14 @@ class DownloadImageCubit extends Cubit<DownloadImageState> {
       final filePath =
           '${tempDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
+
+      if (imageUrl.startsWith('/')) {
+        emit(DownloadImageLoading(progress: 0));
+        await Gal.putImage(imageUrl);
+        emit(DownloadImageSucess());
+        return;
+      }  
+      
       await _dio.download(
         imageUrl,
         filePath,
@@ -99,10 +106,11 @@ class DownloadImageCubit extends Cubit<DownloadImageState> {
           }
         },
       );
+  
 
       final file = File(filePath);
       if (!file.existsSync()) {
-        emit(DownloadImagefailure(errorMessage: "فشل حفظ الصورة"));
+        emit(DownloadImagefailure(errorMessage: "Failed to save the image"));
         return;
       }
 
