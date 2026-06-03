@@ -13,7 +13,7 @@ import 'package:chattr/features/group_chats/presentation/cubits/fetch_group_mess
 import 'package:chattr/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
 import 'package:chattr/features/group_chats/presentation/cubits/send_group_message_cubit/send_group_message_cubit.dart';
 import 'package:chattr/features/group_chats/presentation/views/group_messages_view/views/group_messages_view_body.dart';
-import 'package:chattr/features/group_chats/presentation/views/group_messages_view/widgets/edit_message_bottom_sheet.dart';
+import 'package:chattr/core/widgets/message/widgets/edit_message_bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -150,12 +150,20 @@ class _GroupMessagesViewAppbar extends StatelessWidget
                                       top: Radius.circular(20),
                                     ),
                                   ),
-                                  builder: (ctx) => BlocProvider.value(
-                                    value: context.read<SelectMessagesCubit>(),
-
+                                  builder: (ctx) => MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider.value(
+                                        value: context
+                                            .read<SelectMessagesCubit>(),
+                                      ),
+                                      BlocProvider.value(
+                                        value: context
+                                            .read<FetchGroupMessagesCubit>(),
+                                      ),
+                                    ],
                                     child: EditGroupMessageButtomSheet(
-                                      groupId: groupData.groupData.id!,
-                                      message: selectedmessages[0].content,
+                                      chatId: groupData.groupData.id!,
+                                      message: selectedmessages[0],
                                     ),
                                   ),
                                 );
