@@ -77,22 +77,6 @@ class ChatMessagesList extends StatelessWidget {
                         SelectMessagesCubit,
                         SelectMessagesState
                       >(
-                        buildWhen: (prev, curr) {
-                          // rebuild الرسالة دي بس لو الـ selection بتاعتها اتغيرت
-                          if (curr is ClearSelection) return true;
-                          if (curr is! AddSelectMessages &&
-                              curr is! RemoveSelectMessages) {
-                            return false;
-                          }
-                          return context.read<SelectMessagesCubit>().isSelected(
-                                msg,
-                              ) !=
-                              (prev is AddSelectMessages
-                                  ? context
-                                        .read<SelectMessagesCubit>()
-                                        .isSelected(msg)
-                                  : false);
-                        },
                         builder: (context, selState) {
                           final cubit = context.read<SelectMessagesCubit>();
                           final isSelected = cubit.isSelected(msg);
@@ -116,6 +100,7 @@ class ChatMessagesList extends StatelessWidget {
                               ),
                               child: GestureDetector(
                                 onTap: () {
+                                  if (msg.isDeleted) return;
                                   if (cubit.selectedMessages.isNotEmpty &&
                                       msg.senderId == myId) {
                                     cubit.selectMessage(msg);
@@ -138,24 +123,28 @@ class ChatMessagesList extends StatelessWidget {
                                   }
                                 },
                                 onLongPress: () {
+                                  if (msg.isDeleted) return;
                                   if (cubit.selectedMessages.isEmpty &&
                                       msg.senderId == myId) {
                                     cubit.selectMessage(msg);
                                   }
                                 },
-                                child: Row(
-                                  mainAxisAlignment: isMe
-                                      ? MainAxisAlignment.start
-                                      : MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    MessageContent(
-                                      isMe: isMe,
-                                      message: msg,
-                                      chatId: chatData.chatId,
+                                child:
+                                    //message bubble
+                                    Row(
+                                      mainAxisAlignment: isMe
+                                          ? MainAxisAlignment.start
+                                          : MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        MessageContent(
+                                          isMe: isMe,
+                                          message: msg,
+                                          chatId: chatData.chatId,
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
                               ),
                             ),
                           );
@@ -230,22 +219,6 @@ class ChatMessagesList extends StatelessWidget {
                         SelectMessagesCubit,
                         SelectMessagesState
                       >(
-                        buildWhen: (prev, curr) {
-                          // rebuild الرسالة دي بس لو الـ selection بتاعتها اتغيرت
-                          if (curr is ClearSelection) return true;
-                          if (curr is! AddSelectMessages &&
-                              curr is! RemoveSelectMessages) {
-                            return false;
-                          }
-                          return context.read<SelectMessagesCubit>().isSelected(
-                                msg,
-                              ) !=
-                              (prev is AddSelectMessages
-                                  ? context
-                                        .read<SelectMessagesCubit>()
-                                        .isSelected(msg)
-                                  : false);
-                        },
                         builder: (context, selState) {
                           final cubit = context.read<SelectMessagesCubit>();
                           final isSelected = cubit.isSelected(msg);
@@ -269,6 +242,7 @@ class ChatMessagesList extends StatelessWidget {
                               ),
                               child: GestureDetector(
                                 onTap: () {
+                                  if (msg.isDeleted) return;
                                   if (cubit.selectedMessages.isNotEmpty &&
                                       msg.senderId == myId) {
                                     cubit.selectMessage(msg);
@@ -288,6 +262,7 @@ class ChatMessagesList extends StatelessWidget {
                                   }
                                 },
                                 onLongPress: () {
+                                  if (msg.isDeleted) return;
                                   if (cubit.selectedMessages.isEmpty &&
                                       msg.senderId == myId) {
                                     cubit.selectMessage(msg);
@@ -299,17 +274,14 @@ class ChatMessagesList extends StatelessWidget {
                                       : MainAxisAlignment.end,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                
                                     MessageContent(
                                       isMe: isMe,
                                       message: msg,
                                       chatId: chatData.id,
                                     ),
-                                        if (!isMe) ...[
-                                             const Gap(5),
+                                    if (!isMe) ...[
+                                      const Gap(5),
                                       _SenderImage(sender: sender),
-                                      
-                                   
                                     ],
                                   ],
                                 ),
