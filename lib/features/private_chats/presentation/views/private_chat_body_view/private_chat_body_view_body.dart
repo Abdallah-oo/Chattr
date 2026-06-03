@@ -191,7 +191,7 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
               ),
             ),
             SendMessageField(
-                     chatData: widget.chatData,
+              chatData: widget.chatData,
               curruntUser: widget.curruntUser,
             ),
           ],

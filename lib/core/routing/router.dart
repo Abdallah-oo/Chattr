@@ -31,8 +31,10 @@ import 'package:chattr/features/group_chats/presentation/cubits/select_group_mem
 import 'package:chattr/features/group_chats/presentation/views/group_messages_view/views/group_messages_view.dart';
 import 'package:chattr/features/group_chats/presentation/views/group_messages_view/widgets/view_group_members.dart';
 import 'package:chattr/features/group_chats/presentation/views/groups_view/widgets/create_group.dart';
+import 'package:chattr/features/private_chats/data/repos/send_private_message_repo/send_private_message_repo.dart';
 import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
 import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
+import 'package:chattr/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 import 'package:chattr/features/private_chats/presentation/views/private_chat_body_view/private_chat_body_view.dart';
 import 'package:chattr/root.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -112,9 +114,25 @@ abstract class AppRouter {
         builder: (context, state) {
           final chatData = state.extra as PrivateChatParams;
 
-          return PrivateChatBodyView(
-            chatData: chatData.chatData,
-            user: chatData.curruntUser,
+          return MultiBlocProvider(
+            providers: [
+                    BlocProvider(create: (context) => SelectMessagesCubit()),
+                              BlocProvider(
+                create: (context) => SendPrivateMessageCubit(
+                  fetchCubit: getIt<FetchPrivateMessagesCubit>(),
+                  repo: getIt<SendPrivateMessageRepo>(),
+                ),
+              ),
+              BlocProvider(
+                create: (context) => AudioCubit(getIt<SupabaseStorage>()),
+              ),
+              BlocProvider(create: (context) => PickImageCubit()),
+
+            ],
+            child: PrivateChatBodyView(
+              chatData: chatData.chatData,
+              user: chatData.curruntUser,
+            ),
           );
         },
       ),
