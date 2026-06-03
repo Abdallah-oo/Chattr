@@ -1,6 +1,7 @@
 import 'package:chattr/core/cubits/select_messages/select_messages_cubit.dart';
 import 'package:chattr/core/utils/di/get_it.dart';
 import 'package:chattr/core/widgets/custom_appbar.dart';
+import 'package:chattr/core/widgets/message/widgets/edit_message_bottom_sheet.dart';
 import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
 import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_chats_cubit/fetch_private_chats_cubit.dart';
@@ -62,6 +63,45 @@ class PrivateChatBodyView extends StatelessWidget {
                   return selectedmessages.isNotEmpty
                       ? Row(
                           children: [
+                               selectedmessages.length == 1 &&
+                                    selectedmessages[0].privateMessageType ==
+                                        PrivateMessageType.text
+                                ? InkWell(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled:
+                                            true, // مهم علشان ياخد مساحة كبيرة
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          ),
+                                        ),
+                                        builder: (ctx) => MultiBlocProvider(
+                                          providers: [
+                                            BlocProvider.value(
+                                              value: context
+                                                  .read<SelectMessagesCubit>(),
+                                            ),
+                                            BlocProvider.value(
+                                              value: context
+                                                  .read<
+                                                    FetchPrivateMessagesCubit
+                                                  >(),
+                                            ),
+                                          ],
+                                          child: EditGroupMessageButtomSheet(
+                                            chatId: chatData.chatId,
+                                            message: selectedmessages[0],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Icon(Icons.edit, size: 20),
+                                  )
+                                : SizedBox.shrink(),
+
+                            Gap(10),
                             context.read<SelectMessagesCubit>().containMedia()
                                 ? SizedBox.shrink()
                                 : InkWell(
