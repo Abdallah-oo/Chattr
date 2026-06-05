@@ -72,21 +72,24 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
     _userScrolledUp = pos.pixels < pos.maxScrollExtent - 100;
   }
 
-  void _scrollToBottom({bool animated = false}) {
+ void _scrollToBottom({bool animated = false}) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
-      final max = _scrollController.position.maxScrollExtent;
-      if (max <= 0) return;
-
-      if (animated) {
-        _scrollController.animateTo(
-          max,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-        );
-      } else {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (!_scrollController.hasClients) return;
+        final max = _scrollController.position.maxScrollExtent;
+        if (max <= 0) return;
         _scrollController.jumpTo(max);
-      }
+
+        // ✅ frame تالت — بعد ما الـ SliverList يبني باقي الـ items
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (!_scrollController.hasClients) return;
+          final newMax = _scrollController.position.maxScrollExtent;
+          if (newMax > max) {
+            _scrollController.jumpTo(newMax);
+          }
+        });
+      });
     });
   }
 

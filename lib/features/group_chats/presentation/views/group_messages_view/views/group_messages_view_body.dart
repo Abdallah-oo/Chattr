@@ -30,6 +30,8 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
   bool _userScrolledUp = false;
   int _prevMessageCount = 0;
   int _lastMarkedUnread = -1;
+  bool _initialScrollDone = false;
+
   String get _groupId => widget.groupData.id as String;
 
   @override
@@ -67,25 +69,28 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
   void _scrollToBottom({bool animated = false}) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
-      final max = _scrollController.position.maxScrollExtent;
-      if (max <= 0) return;
-
-      if (animated) {
-        _scrollController.animateTo(
-          max,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-        );
-      } else {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (!_scrollController.hasClients) return;
+        final max = _scrollController.position.maxScrollExtent;
+        if (max <= 0) return;
         _scrollController.jumpTo(max);
-      }
+
+        // ✅ frame تالت — بعد ما الـ SliverList يبني باقي الـ items
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (!_scrollController.hasClients) return;
+          final newMax = _scrollController.position.maxScrollExtent;
+          if (newMax > max) {
+            
+            _scrollController.jumpTo(newMax);
+          }
+        });
+      });
     });
   }
 
   void _handleNewMessages(FetchGroupMessagesSuccess state) {
     final messages = state.messages;
 
-    // markAllAsRead بس لو فيه unread جديد — مش في كل rebuild
     final unreadCount = widget.groupData.unreadCount;
     if (unreadCount > 0 && unreadCount != _lastMarkedUnread) {
       _lastMarkedUnread = unreadCount;
@@ -94,23 +99,31 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
       );
     }
 
-    // رسايل جديدة وصلت
+    if (!_initialScrollDone) {
+      if (messages.isNotEmpty) {
+        _initialScrollDone = true;
+        _prevMessageCount = messages.length;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom(animated: false);
+        });
+      }
+      return; // ← بيمنع أي emit تاني يعمل scroll في أول الـ load
+    }
+
     if (messages.length > _prevMessageCount) {
       _prevMessageCount = messages.length;
       if (!_userScrolledUp) _scrollToBottom(animated: true);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<SendGroupMessageCubit, SendGroupMessageState>(
       listener: (context, state) {
-         if (state is SendGroupMessageSuccess) {
+        if (state is SendGroupMessageSuccess) {
           _scrollToBottom(animated: true);
         } else if (state is SendGroupMessageFailure) {
           CustomSnackBar.error(context, state.errorMessage);
         }
-      
       },
       child: BlocListener<FetchGroupMessagesCubit, FetchGroupMessagesState>(
         listenWhen: (_, curr) {
