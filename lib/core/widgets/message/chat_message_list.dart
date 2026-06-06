@@ -25,11 +25,15 @@ class ChatMessagesList extends StatelessWidget {
     this.scrollController,
     required this.chatData,
     required this.currentUser,
+  
+    this.reversed = false,
   });
 
   final dynamic chatData;
   final UserModel currentUser;
   final ScrollController? scrollController;
+
+  final bool reversed;
 
   @override
   Widget build(BuildContext context) {
@@ -73,19 +77,21 @@ class ChatMessagesList extends StatelessWidget {
                 );
               }
 
+              final displayMessages = reversed
+                  ? messages.reversed.toList()
+                  : messages;
+
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  addAutomaticKeepAlives:
-                      true, // يحتفظ بالـ widgets اللي فيها KeepAlive
+                  addAutomaticKeepAlives: true,
                   addRepaintBoundaries: true,
-                  childCount: messages.length,
+                  childCount: displayMessages.length,
                   (context, index) {
-                    final msg = messages[index];
+                    final msg = displayMessages[index];
                     final isMe = msg.senderId == myId;
                     final isImage =
                         msg.privateMessageType == PrivateMessageType.image;
 
-                    // Key ثابت — يمنع Flutter من إعادة بناء الـ widget لما الـ list تتغير
                     final stableKey = ValueKey(msg.messageId ?? msg.tempId);
 
                     return BlocBuilder<
@@ -142,21 +148,19 @@ class ChatMessagesList extends StatelessWidget {
                                   cubit.selectMessage(msg);
                                 }
                               },
-                              child:
-                                  //message bubble
-                                  Row(
-                                    mainAxisAlignment: isMe
-                                        ? MainAxisAlignment.start
-                                        : MainAxisAlignment.end,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      MessageContent(
-                                        isMe: isMe,
-                                        message: msg,
-                                        chatId: chatData.chatId,
-                                      ),
-                                    ],
+                              child: Row(
+                                mainAxisAlignment: isMe
+                                    ? MainAxisAlignment.start
+                                    : MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  MessageContent(
+                                    isMe: isMe,
+                                    message: msg,
+                                    chatId: chatData.chatId,
                                   ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -202,16 +206,19 @@ class ChatMessagesList extends StatelessWidget {
                 );
               }
 
+              final displayMessages = reversed
+                  ? messages.reversed.toList()
+                  : messages;
+
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  addAutomaticKeepAlives:
-                      true, // يحتفظ بالـ widgets اللي فيها KeepAlive
+                  addAutomaticKeepAlives: true,
                   addRepaintBoundaries: true,
-                  childCount: messages.length,
+                  childCount: displayMessages.length,
                   (context, index) {
                     GroupMessageModel msg;
                     UserModel? sender;
-                    msg = messages[index];
+                    msg = displayMessages[index];
                     if (msg.sender == null) {
                       sender = UsersCache.getUser(msg.senderId);
                       msg = msg.copyWith(sender: sender);
@@ -222,7 +229,6 @@ class ChatMessagesList extends StatelessWidget {
                     final isMe = msg.senderId == myId;
                     final isImage = msg.messageType == GroupMessageType.image;
 
-                    // Key ثابت — يمنع Flutter من إعادة بناء الـ widget لما الـ list تتغير
                     final stableKey = ValueKey(msg.messageId ?? msg.tempId);
 
                     return BlocBuilder<
