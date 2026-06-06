@@ -52,42 +52,38 @@ class _ViewImageState extends State<ViewImage> {
                 minScale: 0.5,
                 maxScale: 4.0,
                 child: Center(
-                  child: Hero(
-                    tag: widget.imageInfo.imageUrl,
-                    child:
-                        (widget.imageInfo.imageUrl.startsWith('/') &&
-                            File(widget.imageInfo.imageUrl).existsSync())
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(
-                              File(widget.imageInfo.imageUrl),
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              gaplessPlayback: true,
-                              cacheWidth:
-                                  800, // يحط الصورة في الـ image cache بـ resolution معقولة
-                              frameBuilder: (_, child, frame, _) =>
-                                  frame == null ? _Placeholder() : child,
-                            ),
-                          )
-                        : CachedNetworkImage(
-                            fit: BoxFit.contain,
-                            imageUrl: widget.imageInfo.imageUrl,
-                            placeholder: (context, url) => Center(
-                              child: CupertinoActivityIndicator(
-                                color: Colors.white54,
-                                radius: 9,
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Center(
-                              child: const Icon(
-                                Icons.image_not_supported_outlined,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                            ),
-                          ),
-                  ),
+                  child: (widget.imageInfo.imageUrl.startsWith('/') &&
+                      File(widget.imageInfo.imageUrl).existsSync())
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        File(widget.imageInfo.imageUrl),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        gaplessPlayback: true,
+                        cacheWidth:
+                            800, // يحط الصورة في الـ image cache بـ resolution معقولة
+                        frameBuilder: (_, child, frame, _) =>
+                            frame == null ? _Placeholder() : child,
+                      ),
+                    )
+                  : CachedNetworkImage(
+                      fit: BoxFit.contain,
+                      imageUrl: widget.imageInfo.imageUrl,
+                      placeholder: (context, url) => Center(
+                        child: CupertinoActivityIndicator(
+                          color: Colors.white54,
+                          radius: 9,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Center(
+                        child: const Icon(
+                          Icons.image_not_supported_outlined,
+                          color: Colors.red,
+                          size: 40,
+                        ),
+                      ),
+                    ),
                 ),
               ),
             ),
