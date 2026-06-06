@@ -33,16 +33,14 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
   bool _isPaginating = false;
   bool _userScrolledUp = false;
   int _prevMessageCount = 0;
-
-  // آخر عدد unread اتعملت له markAllAsRead — عشان مش نكررها من غير سبب
   int _lastMarkedUnread = -1;
+  bool _initialScrollDone = false;
 
   String get _chatId => widget.chatData.chatId as String;
 
   @override
   void initState() {
     super.initState();
-
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -59,6 +57,7 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
   }
 
   void _onScroll() {
+    if (!_scrollController.hasClients) return;
     final pos = _scrollController.position;
 
     if (pos.pixels <= 100 && !_isPaginating) {
@@ -72,7 +71,7 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
     _userScrolledUp = pos.pixels < pos.maxScrollExtent - 100;
   }
 
- void _scrollToBottom({bool animated = false}) {
+  void _scrollToBottom() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -80,14 +79,10 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
         final max = _scrollController.position.maxScrollExtent;
         if (max <= 0) return;
         _scrollController.jumpTo(max);
-
-        // ✅ frame تالت — بعد ما الـ SliverList يبني باقي الـ items
         SchedulerBinding.instance.addPostFrameCallback((_) {
           if (!_scrollController.hasClients) return;
           final newMax = _scrollController.position.maxScrollExtent;
-          if (newMax > max) {
-            _scrollController.jumpTo(newMax);
-          }
+          if (newMax > max) _scrollController.jumpTo(newMax);
         });
       });
     });
@@ -96,7 +91,6 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
   void _handleNewMessages(FetchPrivateMessagesSuccess state) {
     final messages = state.messages;
 
-    // markAllAsRead بس لو فيه unread جديد — مش في كل rebuild
     final unreadCount = context
         .read<FetchPrivateMessagesCubit>()
         .getUnreadCount(_chatId);
@@ -106,10 +100,26 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
       context.read<FetchPrivateMessagesCubit>().markAllAsRead(chatId: _chatId);
     }
 
-    // رسايل جديدة وصلت
     if (messages.length > _prevMessageCount) {
       _prevMessageCount = messages.length;
-      if (!_userScrolledUp) _scrollToBottom(animated: true);
+
+      if (!_initialScrollDone) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted || !_scrollController.hasClients) return;
+              final max = _scrollController.position.maxScrollExtent;
+              if (max > 0) {
+                _initialScrollDone = true;
+                _scrollController.jumpTo(max);
+              }
+            });
+          });
+        });
+        return;
+      }
+
+      if (!_userScrolledUp) _scrollToBottom();
     }
   }
 
@@ -118,7 +128,7 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
     return BlocListener<SendPrivateMessageCubit, SendPrivateMessageState>(
       listener: (context, state) {
         if (state is SendPrivateMessageSuccess) {
-          _scrollToBottom(animated: true);
+          _scrollToBottom();
         } else if (state is SendPrivateMessageFailure) {
           CustomSnackBar.error(context, state.errorMessage);
         }

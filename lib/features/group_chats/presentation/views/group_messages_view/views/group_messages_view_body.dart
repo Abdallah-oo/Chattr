@@ -53,6 +53,7 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
   }
 
   void _onScroll() {
+    if (!_scrollController.hasClients) return;
     final pos = _scrollController.position;
 
     if (pos.pixels <= 100 && !_isPaginating) {
@@ -66,7 +67,7 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
     _userScrolledUp = pos.pixels < pos.maxScrollExtent - 100;
   }
 
-  void _scrollToBottom({bool animated = false}) {
+  void _scrollToBottom() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -74,15 +75,10 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
         final max = _scrollController.position.maxScrollExtent;
         if (max <= 0) return;
         _scrollController.jumpTo(max);
-
-        // ✅ frame تالت — بعد ما الـ SliverList يبني باقي الـ items
         SchedulerBinding.instance.addPostFrameCallback((_) {
           if (!_scrollController.hasClients) return;
           final newMax = _scrollController.position.maxScrollExtent;
-          if (newMax > max) {
-            
-            _scrollController.jumpTo(newMax);
-          }
+          if (newMax > max) _scrollController.jumpTo(newMax);
         });
       });
     });
@@ -99,28 +95,35 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
       );
     }
 
-    if (!_initialScrollDone) {
-      if (messages.isNotEmpty) {
-        _initialScrollDone = true;
-        _prevMessageCount = messages.length;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _scrollToBottom(animated: false);
-        });
-      }
-      return; // ← بيمنع أي emit تاني يعمل scroll في أول الـ load
-    }
-
     if (messages.length > _prevMessageCount) {
       _prevMessageCount = messages.length;
-      if (!_userScrolledUp) _scrollToBottom(animated: true);
+
+      if (!_initialScrollDone) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted || !_scrollController.hasClients) return;
+              final max = _scrollController.position.maxScrollExtent;
+              if (max > 0) {
+                _initialScrollDone = true;
+                _scrollController.jumpTo(max);
+              }
+            });
+          });
+        });
+        return;
+      }
+
+      if (!_userScrolledUp) _scrollToBottom();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<SendGroupMessageCubit, SendGroupMessageState>(
       listener: (context, state) {
         if (state is SendGroupMessageSuccess) {
-          _scrollToBottom(animated: true);
+          _scrollToBottom();
         } else if (state is SendGroupMessageFailure) {
           CustomSnackBar.error(context, state.errorMessage);
         }
@@ -140,7 +143,7 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
               child: CustomScrollView(
                 controller: _scrollController,
                 slivers: [
-                  SliverToBoxAdapter(child: Gap(20)),
+                  const SliverToBoxAdapter(child: Gap(20)),
                   ChatMessagesList(
                     currentUser: widget.currentUser,
                     scrollController: _scrollController,
