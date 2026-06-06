@@ -19,9 +19,6 @@ class LoginView extends StatelessWidget {
             CustomSnackBar.error(context, state.errorMessage ?? '');
           }
           if (state.status == AuthStatus.success) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              CustomSnackBar.success(context, 'Login Successfully');
-            });
             context.pushReplacement(Routes.root);
           }
         },
