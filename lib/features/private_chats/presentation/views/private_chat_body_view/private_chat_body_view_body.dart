@@ -9,7 +9,6 @@ import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_messages_cubit/fetch_private_messages_cubit.dart';
 import 'package:chattr/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -31,10 +30,7 @@ class PrivateChatBodyViewBody extends StatefulWidget {
 class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
   final ScrollController _scrollController = ScrollController();
   bool _isPaginating = false;
-  bool _userScrolledUp = false;
-  int _prevMessageCount = 0;
   int _lastMarkedUnread = -1;
-  bool _initialScrollDone = false;
 
   String get _chatId => widget.chatData.chatId as String;
 
@@ -60,37 +56,16 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
     if (!_scrollController.hasClients) return;
     final pos = _scrollController.position;
 
-    if (pos.pixels <= 100 && !_isPaginating) {
+    if (pos.pixels >= pos.maxScrollExtent - 100 && !_isPaginating) {
       final cubit = context.read<FetchPrivateMessagesCubit>();
       if (cubit.hasMore(_chatId)) {
         _isPaginating = true;
         cubit.loadMoreMessages(_chatId).then((_) => _isPaginating = false);
       }
     }
-
-    _userScrolledUp = pos.pixels < pos.maxScrollExtent - 100;
-  }
-
-  void _scrollToBottom() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (!_scrollController.hasClients) return;
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (!_scrollController.hasClients) return;
-        final max = _scrollController.position.maxScrollExtent;
-        if (max <= 0) return;
-        _scrollController.jumpTo(max);
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          if (!_scrollController.hasClients) return;
-          final newMax = _scrollController.position.maxScrollExtent;
-          if (newMax > max) _scrollController.jumpTo(newMax);
-        });
-      });
-    });
   }
 
   void _handleNewMessages(FetchPrivateMessagesSuccess state) {
-    final messages = state.messages;
-
     final unreadCount = context
         .read<FetchPrivateMessagesCubit>()
         .getUnreadCount(_chatId);
@@ -99,37 +74,13 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
       _lastMarkedUnread = unreadCount;
       context.read<FetchPrivateMessagesCubit>().markAllAsRead(chatId: _chatId);
     }
-
-    if (messages.length > _prevMessageCount) {
-      _prevMessageCount = messages.length;
-
-      if (!_initialScrollDone) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted || !_scrollController.hasClients) return;
-              final max = _scrollController.position.maxScrollExtent;
-              if (max > 0) {
-                _initialScrollDone = true;
-                _scrollController.jumpTo(max);
-              }
-            });
-          });
-        });
-        return;
-      }
-
-      if (!_userScrolledUp) _scrollToBottom();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<SendPrivateMessageCubit, SendPrivateMessageState>(
       listener: (context, state) {
-        if (state is SendPrivateMessageSuccess) {
-          _scrollToBottom();
-        } else if (state is SendPrivateMessageFailure) {
+        if (state is SendPrivateMessageFailure) {
           CustomSnackBar.error(context, state.errorMessage);
         }
       },
@@ -147,7 +98,17 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
             Expanded(
               child: CustomScrollView(
                 controller: _scrollController,
+             
+                reverse: true,
                 slivers: [
+               
+                  const SliverToBoxAdapter(child: Gap(20)),
+                  ChatMessagesList(
+                    chatData: widget.chatData,
+                    currentUser: widget.curruntUser,
+                    scrollController: _scrollController,
+                    reversed: true,
+                  ),
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
@@ -194,11 +155,6 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
                         const Gap(30),
                       ],
                     ),
-                  ),
-                  ChatMessagesList(
-                    chatData: widget.chatData,
-                    currentUser: widget.curruntUser,
-                    scrollController: _scrollController,
                   ),
                 ],
               ),
