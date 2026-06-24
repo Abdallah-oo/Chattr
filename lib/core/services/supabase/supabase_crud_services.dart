@@ -1,13 +1,13 @@
-
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:chattr/core/services/hive/hive_services.dart';
 import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
 import 'package:chattr/core/services/supabase/supabase_error.dart';
+import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseCrudServices {
-
-
   final SupabaseClientManager _clientManager;
 
   SupabaseCrudServices(this._clientManager);
@@ -89,6 +89,25 @@ class SupabaseCrudServices {
     return _execute(() async {
       await _client.from(table).delete().eq(column, id);
     }, debugLabel: 'Delete');
+  }
+
+  //update fcm token
+  // مثال للدالة جوا الـ Service بتاعتك
+  Future<void> updateUserFcmToken({
+    required String userId,
+    required String token,
+  }) async {
+    try {
+      await _client // أو اسم الـ instance بتاعك
+          .from('messenger_users')
+          .update({'fcm_token': token})
+          .eq('id', userId);
+      final UserModel? updateUser = await HiveService.getUser(userId);
+      await HiveService.saveUser(updateUser!.copyWith(fcmToken: token));
+      log('FCM Token updated successfully in Supabase');
+    } catch (e) {
+      log('Error updating FCM token: $e');
+    }
   }
 
   // ===================== CORE EXECUTOR =====================

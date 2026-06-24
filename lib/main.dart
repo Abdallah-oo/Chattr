@@ -1,5 +1,6 @@
 import 'package:chattr/chattr_app.dart';
 import 'package:chattr/core/services/hive/hive_services.dart';
+import 'package:chattr/core/services/notification/notification_service.dart';
 import 'package:chattr/core/services/supabase/supabase_constants.dart';
 import 'package:chattr/core/utils/di/get_it.dart';
 import 'package:chattr/features/auth/data/models/user_model.dart';
@@ -7,38 +8,62 @@ import 'package:chattr/features/group_chats/data/models/group_message_model.dart
 import 'package:chattr/features/group_chats/data/models/group_model.dart';
 import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
 import 'package:chattr/features/private_chats/data/models/private_message_model.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'firebase_options.dart';
 
 void main() async {
-  // Initialize Supabase
+  WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-    WidgetsFlutterBinding.ensureInitialized();
+  await _initFirebase();
+  await _initHive();
+  await _initSupabase();
 
   setUpGetIt();
+  getIt<NotificationService>().init();
+
+  runApp(const ChattrApp());
+}
+
+Future<void> _initFirebase() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+}
+
+Future<void> _initSupabase() async {
   await Supabase.initialize(
     url: SupabaseConstants.url,
     anonKey: SupabaseConstants.publishKey,
   );
+}
 
-  Hive.registerAdapter(UserModelAdapter());
-  Hive.registerAdapter(PrivateChatModelAdapter());
-  Hive.registerAdapter(PrivateMessageModelAdapter());
-  Hive.registerAdapter(PrivateMessageStatusAdapter());
-  Hive.registerAdapter(PrivateMessageTypeAdapter());
-  Hive.registerAdapter(GroupMessageModelAdapter());
-  Hive.registerAdapter(GroupMessageStatusAdapter());
-  Hive.registerAdapter(GroupMessageTypeAdapter());
-  Hive.registerAdapter(GroupModelAdapter());
-  Hive.registerAdapter(UserInGroupAdapter());
+Future<void> _initHive() async {
+  await Hive.initFlutter();
+  _registerHiveAdapters();
+  await _openHiveBoxes();
+}
 
-  await Hive.openBox<UserModel>(HiveService.userBoxName);
-  await Hive.openBox<PrivateChatModel>(HiveService.privateChatsBoxName);
-  await Hive.openBox<PrivateMessageModel>(HiveService.privateMessageBoxName);
-  await Hive.openBox<GroupModel>(HiveService.groupsBoxName);
-  await Hive.openBox<GroupMessageModel>(HiveService.groupsMessagesBoxName);
+void _registerHiveAdapters() {
+  Hive
+    ..registerAdapter(UserModelAdapter())
+    ..registerAdapter(PrivateChatModelAdapter())
+    ..registerAdapter(PrivateMessageModelAdapter())
+    ..registerAdapter(PrivateMessageStatusAdapter())
+    ..registerAdapter(PrivateMessageTypeAdapter())
+    ..registerAdapter(GroupMessageModelAdapter())
+    ..registerAdapter(GroupMessageStatusAdapter())
+    ..registerAdapter(GroupMessageTypeAdapter())
+    ..registerAdapter(GroupModelAdapter())
+    ..registerAdapter(UserInGroupAdapter());
+}
 
-  runApp(const ChattrApp());
+Future<void> _openHiveBoxes() async {
+  await Future.wait([
+    Hive.openBox<UserModel>(HiveService.userBoxName),
+    Hive.openBox<PrivateChatModel>(HiveService.privateChatsBoxName),
+    Hive.openBox<PrivateMessageModel>(HiveService.privateMessageBoxName),
+    Hive.openBox<GroupModel>(HiveService.groupsBoxName),
+    Hive.openBox<GroupMessageModel>(HiveService.groupsMessagesBoxName),
+  ]);
 }

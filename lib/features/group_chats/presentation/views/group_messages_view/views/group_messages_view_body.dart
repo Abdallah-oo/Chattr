@@ -1,4 +1,5 @@
 import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/routing/router.dart';
 import 'package:chattr/core/widgets/message/chat_message_list.dart';
 import 'package:chattr/core/widgets/message/send_message_field.dart';
 import 'package:chattr/features/auth/data/models/user_model.dart';
@@ -33,6 +34,7 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
   @override
   void initState() {
     super.initState();
+    AppRouter.activeChatId = _groupId;
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -44,6 +46,9 @@ class _GroupMessageViewBodyState extends State<GroupMessageViewBody> {
 
   @override
   void dispose() {
+    if (AppRouter.activeChatId == _groupId) {
+      AppRouter.activeChatId = null;
+    }
     _scrollController.dispose();
     super.dispose();
   }

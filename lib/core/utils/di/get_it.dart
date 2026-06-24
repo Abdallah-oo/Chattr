@@ -1,3 +1,4 @@
+import 'package:chattr/core/services/notification/notification_service.dart';
 import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
 import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
 import 'package:chattr/core/services/supabase/supabase_crud_services.dart';
@@ -56,12 +57,17 @@ void setUpGetIt() {
   getIt.registerLazySingleton<SupabaseStorage>(
     () => SupabaseStorage(getIt<SupabaseClientManager>()),
   );
+    //notification services
+  getIt.registerLazySingleton<NotificationService>(
+    () => NotificationService(client: getIt<SupabaseClientManager>()),
+  );
   // auth repo
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(
       getIt<AuthService>(),
       getIt<SupabaseCrudServices>(),
       getIt<SupabaseStorage>(),
+      getIt<NotificationService>()
     ),
   );
   // add to contacts repo
@@ -191,4 +197,6 @@ void setUpGetIt() {
       repo: getIt<FetchGroupMessagesRepo>(),
     ),
   );
+
+
 }
