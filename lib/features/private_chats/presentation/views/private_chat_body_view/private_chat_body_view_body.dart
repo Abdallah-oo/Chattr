@@ -1,4 +1,5 @@
 import 'package:chattr/core/helpers/snack_bar.dart';
+import 'package:chattr/core/routing/router.dart';
 import 'package:chattr/core/themes/app_colors.dart';
 import 'package:chattr/core/themes/app_text_styles.dart';
 import 'package:chattr/core/utils/extensions/responsive.dart';
@@ -37,6 +38,7 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
   @override
   void initState() {
     super.initState();
+    AppRouter.activeChatId = _chatId;
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -48,6 +50,9 @@ class _PrivateChatBodyViewBodyState extends State<PrivateChatBodyViewBody> {
 
   @override
   void dispose() {
+    if (AppRouter.activeChatId == _chatId) {
+      AppRouter.activeChatId = null;
+    }
     _scrollController.dispose();
     super.dispose();
   }

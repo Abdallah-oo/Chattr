@@ -46,6 +46,10 @@ class HiveService {
     final box = Hive.box<PrivateChatModel>(privateChatsBoxName);
     await box.put(chat.chatId, chat);
   }
+    static Future<PrivateChatModel?> getPrivateChat(String chatId) async {
+    final box = Hive.box<PrivateChatModel>(privateChatsBoxName);
+    return box.get(chatId);
+  }
 
   static Future<List<PrivateChatModel>> getPrivateChats() async {
     final box = Hive.box<PrivateChatModel>(privateChatsBoxName);
@@ -119,6 +123,11 @@ class HiveService {
    static Future<void> saveGroup(GroupModel group) async {
     final box = Hive.box<GroupModel>(groupsBoxName);
     await box.put(group.id, group);
+  }
+
+    static Future<GroupModel?> getGroup(String groupId) async {
+    final box = Hive.box<GroupModel>(groupsBoxName);
+    return box.get(groupId);
   }
 
   static Future<List<GroupModel>> getGroups() async {

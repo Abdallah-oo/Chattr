@@ -32,6 +32,9 @@ class UserModel {
   @HiveField(8)
   final bool? isOnLine;
 
+  @HiveField(9)
+  final String? fcmToken;
+
   UserModel({
     required this.id,
     this.name,
@@ -43,10 +46,12 @@ class UserModel {
     this.myContacts,
     this.lastSeen,
     this.isOnLine,
+    this.fcmToken
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      fcmToken: json['fcm_token'],
       id: json['id'],
       name: json['name'],
       email: json['email'],
@@ -73,6 +78,7 @@ class UserModel {
       'last_seen': lastSeen?.toIso8601String(),
       'is_online': isOnLine,
       'my_contacts': myContacts ?? [],
+      'fcm_token' :fcmToken
     };
   }
 
@@ -86,6 +92,7 @@ class UserModel {
     DateTime? lastSeen,
     List<String>? myContacts,
     bool? isOnLine,
+    String? fcmToken
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -97,6 +104,7 @@ class UserModel {
       lastSeen: lastSeen ?? this.lastSeen,
       myContacts: myContacts ?? this.myContacts,
       isOnLine: isOnLine ?? this.isOnLine,
+      fcmToken: fcmToken ?? this.fcmToken
     );
   }
 }
