@@ -13,6 +13,7 @@ import 'package:chattr/features/private_chats/presentation/cubits/send_private_m
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AudioRecordButton extends StatefulWidget {
   final String chatId;
@@ -34,20 +35,15 @@ class AudioRecordButton extends StatefulWidget {
 
 class _AudioRecordButtonState extends State<AudioRecordButton>
     with TickerProviderStateMixin {
-  // ✅ Scale animation
   late AnimationController _scaleController;
   late Animation<double> _scaleAnim;
-
-  // ✅ Pulse animation
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
-
-  // ✅ Ring rotation animation
   late AnimationController _ringController;
 
-  // ✅ Timer
   Timer? _timer;
   int _seconds = 0;
+  bool _permissionGranted = false;
 
   void _startAnimations() {
     _scaleController.forward();
@@ -69,9 +65,10 @@ class _AudioRecordButtonState extends State<AudioRecordButton>
     setState(() => _seconds = 0);
   }
 
-  //.........................................
   @override
   void initState() {
+    super.initState();
+
     _scaleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -93,7 +90,35 @@ class _AudioRecordButtonState extends State<AudioRecordButton>
       duration: const Duration(milliseconds: 2000),
     );
 
-    super.initState();
+    _checkPermission();
+  }
+
+  Future<void> _checkPermission() async {
+    final status = await Permission.microphone.status;
+    if (mounted) setState(() => _permissionGranted = status.isGranted);
+  }
+
+  // ✅ الدالة الوحيدة للـ long press
+  // لو permission مش موجود: نطلبه وننتهي — مش بيحصل recording ولا animation
+  // لو permission موجود: نبدأ عادي
+  Future<void> _onLongPressStart() async {
+    if (!_permissionGranted) {
+      // ✅ بنطلب الـ permission هنا بـ permission_handler مش بـ record
+      // بترجع بعد ما اليوزر يختار (grant/deny) — مش بتفضل شغالة
+      final status = await Permission.microphone.request();
+      if (mounted) setState(() => _permissionGranted = status.isGranted);
+      // الـ long press خلص هنا — الـ onLongPressEnd هيشتغل بس الـ recording مش بدأ
+      return;
+    }
+
+    // ✅ permission موجود — ابدأ عادي
+    HapticFeedback.mediumImpact();
+    _startAnimations();
+    if (!mounted) return;
+    context.read<AudioCubit>().startRecording(
+      chatId: widget.chatId,
+      senderId: widget.senderId,
+    );
   }
 
   @override
@@ -108,30 +133,25 @@ class _AudioRecordButtonState extends State<AudioRecordButton>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPressStart: (_) {
-        HapticFeedback.mediumImpact(); //vibrate on start
-        _startAnimations();
-        context.read<AudioCubit>().startRecording(
-          chatId: widget.chatId,
-          senderId: widget.senderId,
-        );
-      },
+      onLongPressStart: (_) => _onLongPressStart(),
       onLongPressEnd: (_) async {
         HapticFeedback.lightImpact();
         _stopAnimations();
 
+        // ✅ لو الـ recording مبدأش (مثلاً بعد permission request)، مش بيحصل حاجة
         final cubit = context.read<AudioCubit>();
         if (cubit.state.status != RecordingStatus.recording) return;
 
         final localPath = await cubit.stopRecordingOnly();
         if (localPath == null || !context.mounted) return;
+
         final sendPrivateVoice = widget.isGroup
             ? null
             : context.read<SendPrivateMessageCubit>();
         final sendGroupVoice = widget.isGroup
             ? context.read<SendGroupMessageCubit>()
             : null;
-        // ✅ اعرض فوراً بدون URL
+
         widget.isGroup
             ? sendGroupVoice!.showLocalVoice(
                 sender: widget.sender,
@@ -148,7 +168,6 @@ class _AudioRecordButtonState extends State<AudioRecordButton>
                 duration: cubit.lastDuration,
               );
 
-        // ✅ upload في الخلفية
         unawaited(
           cubit.uploadAndNotify(
             localPath: localPath,
@@ -187,15 +206,12 @@ class _AudioRecordButtonState extends State<AudioRecordButton>
                   clipBehavior: Clip.none,
                   alignment: Alignment.centerRight,
                   children: [
-                    // ✅ Timer text
                     if (isRecording)
                       RecordTimerText(
                         isRecording: isRecording,
                         seconds: _seconds,
                       ),
-                    // ✅ Pulse ring
                     if (isRecording) PulseRing(pulseAnim: _pulseAnim),
-                    // ✅ Rotating dashed ring
                     if (isRecording)
                       Positioned(
                         right: 0,
@@ -208,7 +224,6 @@ class _AudioRecordButtonState extends State<AudioRecordButton>
                           ),
                         ),
                       ),
-
                     RecordButton(
                       scaleAnim: _scaleAnim,
                       isRecording: isRecording,
