@@ -50,7 +50,7 @@ serve(async (req) => {
         notificationBody = '🎥 Video'
         break
 
-      case 'audio':
+      case 'voice':
         notificationBody = '🎤 Voice message'
         break
 
