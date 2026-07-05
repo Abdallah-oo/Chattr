@@ -96,6 +96,7 @@
 - ⚡ **Offline-First** — Local caching with Hive for instant load and offline access
 - 🌙 **Dark Theme** — Sleek dark UI with a modern frosted-glass navigation bar
 - 🔄 **Real-time Sync** — Supabase Realtime for live message updates across devices
+- 🔔 **Push Notifications** — Firebase Cloud Messaging (FCM V1) delivers notifications when the app is in the background, triggered automatically via Supabase Edge Functions on every new message
 
 ---
 
@@ -110,7 +111,8 @@ lib/
 │   ├── routing/         # App-wide routing (go_router)
 │   ├── services/
 │   │   ├── hive/        # Local persistence (Hive boxes)
-│   │   └── supabase/    # Supabase client, storage, and realtime
+│   │   ├── supabase/    # Supabase client, storage, and realtime
+│   │   └── notification/ # FCM token management & notification handling
 │   ├── themes/          # App colors and theme config
 │   └── utils/
 │       ├── di/          # Dependency injection (get_it)
@@ -151,6 +153,8 @@ feature/
 | State Management | BLoC / Cubit |
 | Dependency Injection | get_it |
 | Navigation | go_router |
+| Push Notifications | Firebase Cloud Messaging (FCM V1) |
+| Serverless Functions | Supabase Edge Functions (Deno) |
 | Audio Recording | record |
 | Networking | dio |
 | Image Saving | gal |
@@ -171,10 +175,36 @@ dependencies:
   gal: ^2.x                 # Save images to gallery
   equatable: ^2.x           # Value equality
   path_provider: ^2.x       # File system access
+  firebase_core: ^3.x       # Firebase initialization
+  firebase_messaging: ^15.x # Push notifications (FCM V1)
 ```
 
 ---
 
+
+## 🔔 Push Notifications Architecture
+
+Chattr uses **Firebase Cloud Messaging V1 API** for push notifications, with the full flow handled server-side via Supabase:
+
+```
+New message inserted in DB
+        ↓
+Supabase Database Webhook fires
+        ↓
+Supabase Edge Function (Deno)
+  - Fetches sender name
+  - Fetches chat members
+  - Gets their FCM tokens from messenger_users table
+  - Authenticates with FCM V1 via Service Account JWT
+        ↓
+FCM delivers notification to receiver's device
+```
+
+- FCM tokens are saved and refreshed automatically in `NotificationService`
+- Edge Function uses **Service Account authentication** (not legacy server key)
+- Notifications work when the app is **backgrounded or closed**
+
+---
 
 ## 📄 License
 
