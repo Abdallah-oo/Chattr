@@ -8,7 +8,7 @@ import 'package:chattr/core/widgets/custom_button.dart';
 import 'package:chattr/core/widgets/custom_text.dart';
 import 'package:chattr/core/widgets/custom_text_field.dart';
 import 'package:chattr/core/widgets/image/ui/pick_image.dart';
-import 'package:chattr/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:chattr/features/auth/presentation/cubits/auth_cubit/auth_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

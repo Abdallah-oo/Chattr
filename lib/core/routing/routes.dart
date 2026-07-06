@@ -9,4 +9,9 @@ class Routes {
   static const groupMessages = '/GroupMessages';
   static const viewGroupMembers = '/ViewGroupMembers';
   static const editGroup = '/EditGroup';
+  static const forgetPassword = '/ForgetPassword';
+  static const verifyOtp = '/VerifyOtp';
+  static const setNewPassword = '/SetNewPassword';
+  static const signupVerification = '/SignupVerification';
+  
 }

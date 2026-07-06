@@ -8,6 +8,7 @@ part 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this.authRepo) : super(AuthState.initial());
   final AuthRepo authRepo;
+ 
   //login btn cubit
   Future<void> onTapLoginBut({
     required String email,
@@ -46,10 +47,10 @@ class AuthCubit extends Cubit<AuthState> {
     );
 
     final user = await authRepo.signup(
-      name: name,
+
       email: email,
       password: password,
-      image: image,
+   
     );
     user.fold(
       (error) => emit(
@@ -59,9 +60,17 @@ class AuthCubit extends Cubit<AuthState> {
           errorMessage: error.message,
         ),
       ),
-      (_) => emit(
-        const AuthState(action: AuthAction.signup, status: AuthStatus.success),
-      ),
+      (_) {
+        return emit(
+           AuthState(
+            action: AuthAction.signup,
+            status: AuthStatus.success,
+            email: email,
+            name: name,
+            image: image,
+          ),
+        );
+      },
     );
   }
 }

@@ -18,7 +18,7 @@ class AuthValidation {
 
   static String? password(String? value) {
     if (value == null || value.trim().isEmpty) return 'Required field';
-    if (value.length < 8) return 'At least 8 characters';
+    if (value.length < 9) return 'At least 9 characters';
     return null;
   }
 
