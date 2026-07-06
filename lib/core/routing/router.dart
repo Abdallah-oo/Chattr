@@ -12,9 +12,15 @@ import 'package:chattr/core/services/supabase/supabase_storage.dart';
 import 'package:chattr/core/utils/di/get_it.dart';
 import 'package:chattr/core/widgets/image/ui/view_image.dart';
 import 'package:chattr/features/auth/data/repos/auth_repo.dart';
-import 'package:chattr/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:chattr/features/auth/presentation/cubits/auth_cubit/auth_cubit.dart';
+import 'package:chattr/features/auth/presentation/cubits/reset_password_cubit/reset_password_cubit.dart';
+import 'package:chattr/features/auth/presentation/cubits/signup-verification_cubit/signup_verification_cubit.dart';
+import 'package:chattr/features/auth/presentation/views/forget_password_view/forget_password_view.dart';
 import 'package:chattr/features/auth/presentation/views/login_view/login_view.dart';
+import 'package:chattr/features/auth/presentation/views/set_new_password_view/set_new_password_view.dart';
 import 'package:chattr/features/auth/presentation/views/signup_view/signup_view.dart';
+import 'package:chattr/features/auth/presentation/views/verify_otp_view/verify_otp_view.dart';
+import 'package:chattr/features/auth/presentation/views/verify_signup_otp_view/verify_signup_otp_view.dart';
 import 'package:chattr/features/contacts/presentation/cubits/fetch_contacts_cubit/fetch_contacts_cubit.dart';
 import 'package:chattr/features/group_chats/data/repos/add_and_remove_admin_repo/add_and_remove_admin_repo.dart';
 import 'package:chattr/features/group_chats/data/repos/create_group_repo/create_group_repo.dart';
@@ -37,11 +43,12 @@ import 'package:chattr/features/private_chats/presentation/cubits/fetch_private_
 import 'package:chattr/features/private_chats/presentation/cubits/send_private_message_cubit/send_private_message_cubit.dart';
 import 'package:chattr/features/private_chats/presentation/views/private_chat_body_view/private_chat_body_view.dart';
 import 'package:chattr/root.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class AppRouter {
-    static String? activeChatId;
+  static String? activeChatId;
 
   static final router = GoRouter(
     routes: [
@@ -118,8 +125,8 @@ abstract class AppRouter {
 
           return MultiBlocProvider(
             providers: [
-                    BlocProvider(create: (context) => SelectMessagesCubit()),
-                              BlocProvider(
+              BlocProvider(create: (context) => SelectMessagesCubit()),
+              BlocProvider(
                 create: (context) => SendPrivateMessageCubit(
                   fetchCubit: getIt<FetchPrivateMessagesCubit>(),
                   repo: getIt<SendPrivateMessageRepo>(),
@@ -129,7 +136,6 @@ abstract class AppRouter {
                 create: (context) => AudioCubit(getIt<SupabaseStorage>()),
               ),
               BlocProvider(create: (context) => PickImageCubit()),
-
             ],
             child: PrivateChatBodyView(
               chatData: chatData.chatData,
@@ -228,6 +234,70 @@ abstract class AppRouter {
               BlocProvider(create: (context) => PickImageCubit()),
             ],
             child: EditGroup(groupData: groupData),
+          );
+        },
+      ),
+
+      //Forget Password
+      ShellRoute(
+        builder: (context, state, child) {
+          return BlocProvider(
+            create: (context) => ResetPasswordCubit(getIt<AuthRepo>()),
+            child: child,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: Routes.forgetPassword,
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                child: ForgotPasswordView(),
+                transitionsBuilder: (context, animation, _, child) =>
+                    FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 400),
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.verifyOtp,
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                child: VerifyOtpView(),
+                transitionsBuilder: (context, animation, _, child) =>
+                    FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 400),
+              );
+            },
+          ),
+
+          GoRoute(
+            path: Routes.setNewPassword,
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                child: SetNewPasswordView(),
+                transitionsBuilder: (context, animation, _, child) =>
+                    FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 400),
+              );
+            },
+          ),
+        ],
+      ),
+
+      //signup verification
+      GoRoute(
+        path: Routes.signupVerification,
+        pageBuilder: (context, state) {
+          final SignupVerificationParams params = state.extra as SignupVerificationParams;
+          return CustomTransitionPage(
+            child: BlocProvider(
+              create: (context) =>
+                  SignupVerificationCubit(getIt<AuthRepo>(), email: params.email, name: params.name, image: params.image),
+              child: VerifySignupOtpView(),
+            ),
+            transitionsBuilder: (context, animation, _, child) =>
+                FadeTransition(opacity: animation, child: child),
+            transitionDuration: const Duration(milliseconds: 400),
           );
         },
       ),

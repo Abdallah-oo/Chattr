@@ -6,7 +6,7 @@ import 'package:chattr/core/utils/validators/auth_validation.dart';
 import 'package:chattr/core/widgets/custom_button.dart';
 import 'package:chattr/core/widgets/custom_text.dart';
 import 'package:chattr/core/widgets/custom_text_field.dart';
-import 'package:chattr/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:chattr/features/auth/presentation/cubits/auth_cubit/auth_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,6 +82,8 @@ class _LoginViewBodyState extends State<LoginViewBody> {
                   );
                 },
               ),
+              const Gap(6),
+              const _ForgotPasswordButton(),
               Gap(30),
               _LoginButton(
                 formKey: formKey,
@@ -169,6 +171,36 @@ class _LoginButton extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+//forget password button
+class _ForgotPasswordButton extends StatelessWidget {
+  const _ForgotPasswordButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          context.push(Routes.forgetPassword);
+        },
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          foregroundColor: AppColors.primary,
+        ),
+        child: Text(
+          "Forgot Password?",
+          style: AppTextStyles.labelLarge.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }

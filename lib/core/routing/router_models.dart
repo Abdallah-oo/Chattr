@@ -1,6 +1,8 @@
 
 
 //?private chats
+import 'dart:io';
+
 import 'package:chattr/features/auth/data/models/user_model.dart';
 import 'package:chattr/features/group_chats/data/models/group_model.dart';
 import 'package:chattr/features/group_chats/presentation/cubits/fetch_groups_cubit/fetch_groups_cubit.dart';
@@ -35,5 +37,17 @@ class GroupChatParams {
     required this.groupData,
     required this.currentUser,
     required this.memberData, this.fetchGroupsCubit,
+  });
+}
+//signup verification 
+class SignupVerificationParams {
+  final String email;
+  final String name;
+  final File image;
+
+  SignupVerificationParams({
+    required this.email,
+    required this.name,
+    required this.image,
   });
 }

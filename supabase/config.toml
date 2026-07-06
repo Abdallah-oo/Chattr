@@ -232,6 +232,17 @@ max_frequency = "1s"
 otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
+[auth.email.template.confirmation]
+subject = "كود التأكيد"
+content_path = "./supabase/templates/confirm_signup.html"
+
+[auth.email.template.recovery]
+subject = "إعادة تعيين كلمة المرور"
+content_path = "./supabase/templates/reset_password.html"
+
+[auth.email.template.magic_link]
+subject = "كود الدخول"
+content_path = "./supabase/templates/magic_link.html"
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]
@@ -258,7 +269,7 @@ otp_expiry = 3600
 # Allow/disallow new user signups via SMS to your project.
 enable_signup = false
 # If enabled, users need to confirm their phone number before signing in.
-enable_confirmations = false
+enable_confirmations = true
 # Template for sending OTP to users
 template = "Your code is {{ `{{ .Code }}` }}"
 # Controls the minimum amount of time that must pass before sending another sms otp.

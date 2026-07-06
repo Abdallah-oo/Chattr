@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:chattr/core/services/hive/hive_services.dart';
 import 'package:chattr/core/services/notification/notification_service.dart';
 import 'package:chattr/core/services/supabase/supabase_auth_services.dart';
+import 'package:chattr/core/services/supabase/supabase_client_manager.dart';
 import 'package:chattr/core/services/supabase/supabase_crud_services.dart';
 import 'package:chattr/core/services/supabase/supabase_error.dart';
 import 'package:chattr/core/services/supabase/supabase_storage.dart';
@@ -17,13 +17,16 @@ class AuthRepoImpl implements AuthRepo {
   final SupabaseCrudServices _crud;
   final SupabaseStorage _storage;
   final NotificationService _notificationService;
+  final SupabaseClientManager _clientManager;
 
   AuthRepoImpl(
     this._authService,
     this._crud,
     this._storage,
     this._notificationService,
+    this._clientManager,
   );
+  SupabaseClient get _client => _clientManager.client;
 
   @override
   Future<Either<SupabaseError, User>> login({
@@ -48,15 +51,44 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<SupabaseError, User>> signup({
-    required String name,
+  Future<Either<SupabaseError, User?>> signup({
+   
     required String email,
     required String password,
+   
+  }) async {
+    try {
+      final response = await _authService.signUp(email, password);
+        final isExistingUnverifiedUser =
+          response.identities?.isEmpty ?? false;
+
+      if (isExistingUnverifiedUser) {
+        // الإيميل موجود بالفعل ولسه مش confirmed
+        // بدل ما نسيب signUp() يفشل بصمت، نبعتله كود تاني بشكل صريح
+        await _client.auth.resend(type: OtpType.signup, email: email);
+        return const Right(null);
+      }
+
+      return Right(response);
+    } catch (e) {
+      return Left(SupabaseError(message: '$e'));
+    }
+  }
+
+  @override
+  Future<Either<SupabaseError, void>> verifySignupOtp({
+    required String email,
+    required String otp,
+     required String name,
     required File image,
   }) async {
     try {
-      final respons = await _authService.signUp(email, password);
-      final myUuid = _authService.currentUser!.id;
+      await _client.auth.verifyOTP(
+        email: email,
+        token: otp,
+        type: OtpType.signup,
+      );
+       final myUuid = _authService.currentUser!.id;
       final path = await _storage.uploadImage(
         file: image,
         storageFile: 'users_image',
@@ -80,13 +112,71 @@ class AuthRepoImpl implements AuthRepo {
       );
       await sendFCMToken(userData);
 
-      return Right(respons);
+
+
+      return const Right(null);
     } catch (e) {
       return Left(SupabaseError(message: '$e'));
     }
   }
 
-  //helper function
+  @override
+  Future<Either<SupabaseError, void>> resendSignupOtp({
+    required String email,
+  }) async {
+    try {
+      await _client.auth.resend(type: OtpType.signup, email: email);
+      return const Right(null);
+    } catch (e) {
+      return Left(SupabaseError(message: '$e'));
+    }
+  }
+  @override
+  Future<Either<SupabaseError, void>> sendPasswordResetOtp({
+    required String email,
+  }) async {
+    try {
+      await _client.auth.resetPasswordForEmail(email);
+      return const Right(null);
+    } catch (e) {
+      return Left(SupabaseError(message: '$e'));
+    }
+  }
+
+  @override
+  Future<Either<SupabaseError, void>> updatePassword({
+    required String newPassword,
+  }) async {
+    try {
+      await _client.auth.updateUser(UserAttributes(password: newPassword));
+      return const Right(null);
+    } catch (e) {
+      return Left(SupabaseError(message: '$e'));
+    }
+  }
+
+  @override
+  Future<Either<SupabaseError, void>> verifyPasswordResetOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      await _client.auth.verifyOTP(
+        email: email,
+        token: otp,
+        type: OtpType.recovery,
+      );
+      return const Right(null);
+    } catch (e) {
+      return Left(SupabaseError(message: '$e'));
+    }
+  }
+
+
+
+  
+
+  //?helper function
   Future<void> sendFCMToken(UserModel userData) async {
     final fcmToken = await syncFcmToken(userData);
     final userDataWithFCM = userData.copyWith(fcmToken: fcmToken);

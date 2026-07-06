@@ -57,7 +57,7 @@ void setUpGetIt() {
   getIt.registerLazySingleton<SupabaseStorage>(
     () => SupabaseStorage(getIt<SupabaseClientManager>()),
   );
-    //notification services
+  //notification services
   getIt.registerLazySingleton<NotificationService>(
     () => NotificationService(client: getIt<SupabaseClientManager>()),
   );
@@ -67,7 +67,8 @@ void setUpGetIt() {
       getIt<AuthService>(),
       getIt<SupabaseCrudServices>(),
       getIt<SupabaseStorage>(),
-      getIt<NotificationService>()
+      getIt<NotificationService>(),
+      getIt<SupabaseClientManager>(),
     ),
   );
   // add to contacts repo
@@ -197,6 +198,4 @@ void setUpGetIt() {
       repo: getIt<FetchGroupMessagesRepo>(),
     ),
   );
-
-
 }
