@@ -38,5 +38,6 @@ abstract interface class AuthRepo {
   });
 
   Future<Either<SupabaseError, void>> updatePassword({required String newPassword});
+   Future<Either<SupabaseError, Unit>> updateFCM();
  
 }

@@ -49,258 +49,267 @@ import 'package:go_router/go_router.dart';
 
 abstract class AppRouter {
   static String? activeChatId;
+  static late final GoRouter router;
 
-  static final router = GoRouter(
-    routes: [
-      //login
-      GoRoute(
-        path: Routes.initial,
-        builder: (context, state) => BlocProvider(
-          create: (context) => AuthCubit(getIt<AuthRepo>()),
-          child: LoginView(),
+  static void init({required String initialLocation}) {
+    router = GoRouter(
+      initialLocation: initialLocation,
+      routes: [
+        //login
+        GoRoute(
+          path: Routes.login,
+          builder: (context, state) => BlocProvider(
+            create: (context) => AuthCubit(getIt<AuthRepo>()),
+            child: LoginView(),
+          ),
         ),
-      ),
 
-      ///signup
-      GoRoute(
-        path: Routes.signup,
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (context) => PickImageCubit()),
-            BlocProvider(create: (context) => AuthCubit(getIt<AuthRepo>())),
+        ///signup
+        GoRoute(
+          path: Routes.signup,
+          builder: (context, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => PickImageCubit()),
+              BlocProvider(create: (context) => AuthCubit(getIt<AuthRepo>())),
+            ],
+            child: SignupView(),
+          ),
+        ),
+
+        //Navigation Bar
+        GoRoute(
+          path: Routes.root,
+          builder: (context, state) {
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => FetchCurrentUserDataCubit(
+                    auth: getIt<AuthService>(),
+                    crud: getIt<SupabaseCrudServices>(),
+                    client: getIt<SupabaseClientManager>(),
+                  )..fetchCurruntUserData(),
+                ),
+
+                BlocProvider(
+                  create: (_) => getIt<FetchContactsCubit>()..fetchContacts(),
+                ),
+                BlocProvider(create: (_) => getIt<FetchPrivateMessagesCubit>()),
+                BlocProvider(
+                  create: (_) =>
+                      getIt<FetchPrivateChatsCubit>()..fetchPrivateChats(),
+                ),
+                BlocProvider(
+                  create: (_) => getIt<FetchGroupsCubit>()..fetchGroups(),
+                ),
+                BlocProvider(create: (_) => getIt<FetchGroupMessagesCubit>()),
+              ],
+              child: Root(),
+            );
+          },
+        ),
+
+        //view image
+        GoRoute(
+          path: Routes.viewImage,
+          builder: (context, state) {
+            final imageInfo = state.extra as ViewImageParams;
+            return BlocProvider(
+              create: (context) => DownloadImageCubit(),
+              child: ViewImage(imageInfo: imageInfo),
+            );
+          },
+        ),
+        //?private chat body
+        GoRoute(
+          path: Routes.privateChatsBody,
+
+          builder: (context, state) {
+            final chatData = state.extra as PrivateChatParams;
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (context) => SelectMessagesCubit()),
+                BlocProvider(
+                  create: (context) => SendPrivateMessageCubit(
+                    fetchCubit: getIt<FetchPrivateMessagesCubit>(),
+                    repo: getIt<SendPrivateMessageRepo>(),
+                  ),
+                ),
+                BlocProvider(
+                  create: (context) => AudioCubit(getIt<SupabaseStorage>()),
+                ),
+                BlocProvider(create: (context) => PickImageCubit()),
+              ],
+              child: PrivateChatBodyView(
+                chatData: chatData.chatData,
+                user: chatData.curruntUser,
+              ),
+            );
+          },
+        ),
+        //?group chat body
+        //creat
+        GoRoute(
+          path: Routes.creatGroup,
+          builder: (context, state) {
+            final FetchContactsCubit contactsCubit =
+                state.extra as FetchContactsCubit;
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => CreateGroupCubit(
+                    auth: getIt<AuthService>(),
+                    repo: getIt<CreateGroupRepo>(),
+                  ),
+                ),
+                BlocProvider(create: (context) => PickImageCubit()),
+                BlocProvider(create: (context) => SelectGroupMembersCubit()),
+              ],
+              child: CreatGroup(contactsCubit: contactsCubit),
+            );
+          },
+        ),
+
+        //group messages view
+        GoRoute(
+          path: Routes.groupMessages,
+          builder: (context, state) {
+            final GroupChatParams groupData = state.extra as GroupChatParams;
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (context) => PickImageCubit()),
+                BlocProvider(
+                  create: (context) => AudioCubit(getIt<SupabaseStorage>()),
+                ),
+
+                BlocProvider(create: (context) => SelectMessagesCubit()),
+              ],
+              child: GroupMessagesView(groupData: groupData),
+            );
+          },
+        ),
+
+        //view group members
+        GoRoute(
+          path: Routes.viewGroupMembers,
+          builder: (context, state) {
+            final GroupChatParams groupData = state.extra as GroupChatParams;
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => AddAndRemoveAdminCubit(
+                    repo: getIt<AddAndRemoveAdminRepo>(),
+                  ),
+                ),
+                BlocProvider(
+                  create: (context) =>
+                      DeleteMemberCubit(getIt<DeleteMemberRepo>()),
+                ),
+                BlocProvider(
+                  create: (context) =>
+                      DeleteGroupCubit(getIt<SupabaseCrudServices>()),
+                ),
+              ],
+              child: ViewGroupMembers(groupData: groupData),
+            );
+          },
+        ),
+
+        //edit group
+        GoRoute(
+          path: Routes.editGroup,
+          builder: (context, state) {
+            final GroupChatParams groupData = state.extra as GroupChatParams;
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) =>
+                      EditGroupDataCubit(getIt<EditGroupDataRepo>()),
+                ),
+                BlocProvider(
+                  create: (context) =>
+                      DeleteGroupCubit(getIt<SupabaseCrudServices>()),
+                ),
+                BlocProvider(create: (context) => SelectGroupMembersCubit()),
+                BlocProvider(create: (context) => PickImageCubit()),
+              ],
+              child: EditGroup(groupData: groupData),
+            );
+          },
+        ),
+
+        //Forget Password
+        ShellRoute(
+          builder: (context, state, child) {
+            return BlocProvider(
+              create: (context) => ResetPasswordCubit(getIt<AuthRepo>()),
+              child: child,
+            );
+          },
+          routes: [
+            GoRoute(
+              path: Routes.forgetPassword,
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                  child: ForgotPasswordView(),
+                  transitionsBuilder: (context, animation, _, child) =>
+                      FadeTransition(opacity: animation, child: child),
+                  transitionDuration: const Duration(milliseconds: 400),
+                );
+              },
+            ),
+            GoRoute(
+              path: Routes.verifyOtp,
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                  child: VerifyOtpView(),
+                  transitionsBuilder: (context, animation, _, child) =>
+                      FadeTransition(opacity: animation, child: child),
+                  transitionDuration: const Duration(milliseconds: 400),
+                );
+              },
+            ),
+
+            GoRoute(
+              path: Routes.setNewPassword,
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                  child: SetNewPasswordView(),
+                  transitionsBuilder: (context, animation, _, child) =>
+                      FadeTransition(opacity: animation, child: child),
+                  transitionDuration: const Duration(milliseconds: 400),
+                );
+              },
+            ),
           ],
-          child: SignupView(),
         ),
-      ),
 
-      //Navigation Bar
-      GoRoute(
-        path: Routes.root,
-        builder: (context, state) {
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => FetchCurrentUserDataCubit(
-                  auth: getIt<AuthService>(),
-                  crud: getIt<SupabaseCrudServices>(),
-                  client: getIt<SupabaseClientManager>(),
-                )..fetchCurruntUserData(),
-              ),
-
-              BlocProvider(
-                create: (_) => getIt<FetchContactsCubit>()..fetchContacts(),
-              ),
-              BlocProvider(create: (_) => getIt<FetchPrivateMessagesCubit>()),
-              BlocProvider(
-                create: (_) =>
-                    getIt<FetchPrivateChatsCubit>()..fetchPrivateChats(),
-              ),
-              BlocProvider(
-                create: (_) => getIt<FetchGroupsCubit>()..fetchGroups(),
-              ),
-              BlocProvider(create: (_) => getIt<FetchGroupMessagesCubit>()),
-            ],
-            child: Root(),
-          );
-        },
-      ),
-
-      //view image
-      GoRoute(
-        path: Routes.viewImage,
-        builder: (context, state) {
-          final imageInfo = state.extra as ViewImageParams;
-          return BlocProvider(
-            create: (context) => DownloadImageCubit(),
-            child: ViewImage(imageInfo: imageInfo),
-          );
-        },
-      ),
-      //?private chat body
-      GoRoute(
-        path: Routes.privateChatsBody,
-
-        builder: (context, state) {
-          final chatData = state.extra as PrivateChatParams;
-
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (context) => SelectMessagesCubit()),
-              BlocProvider(
-                create: (context) => SendPrivateMessageCubit(
-                  fetchCubit: getIt<FetchPrivateMessagesCubit>(),
-                  repo: getIt<SendPrivateMessageRepo>(),
+        //signup verification
+        GoRoute(
+          path: Routes.signupVerification,
+          pageBuilder: (context, state) {
+            final SignupVerificationParams params =
+                state.extra as SignupVerificationParams;
+            return CustomTransitionPage(
+              child: BlocProvider(
+                create: (context) => SignupVerificationCubit(
+                  getIt<AuthRepo>(),
+                  email: params.email,
+                  name: params.name,
+                  image: params.image,
                 ),
+                child: VerifySignupOtpView(),
               ),
-              BlocProvider(
-                create: (context) => AudioCubit(getIt<SupabaseStorage>()),
-              ),
-              BlocProvider(create: (context) => PickImageCubit()),
-            ],
-            child: PrivateChatBodyView(
-              chatData: chatData.chatData,
-              user: chatData.curruntUser,
-            ),
-          );
-        },
-      ),
-      //?group chat body
-      //creat
-      GoRoute(
-        path: Routes.creatGroup,
-        builder: (context, state) {
-          final FetchContactsCubit contactsCubit =
-              state.extra as FetchContactsCubit;
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => CreateGroupCubit(
-                  auth: getIt<AuthService>(),
-                  repo: getIt<CreateGroupRepo>(),
-                ),
-              ),
-              BlocProvider(create: (context) => PickImageCubit()),
-              BlocProvider(create: (context) => SelectGroupMembersCubit()),
-            ],
-            child: CreatGroup(contactsCubit: contactsCubit),
-          );
-        },
-      ),
-
-      //group messages view
-      GoRoute(
-        path: Routes.groupMessages,
-        builder: (context, state) {
-          final GroupChatParams groupData = state.extra as GroupChatParams;
-
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (context) => PickImageCubit()),
-              BlocProvider(
-                create: (context) => AudioCubit(getIt<SupabaseStorage>()),
-              ),
-
-              BlocProvider(create: (context) => SelectMessagesCubit()),
-            ],
-            child: GroupMessagesView(groupData: groupData),
-          );
-        },
-      ),
-
-      //view group members
-      GoRoute(
-        path: Routes.viewGroupMembers,
-        builder: (context, state) {
-          final GroupChatParams groupData = state.extra as GroupChatParams;
-
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => AddAndRemoveAdminCubit(
-                  repo: getIt<AddAndRemoveAdminRepo>(),
-                ),
-              ),
-              BlocProvider(
-                create: (context) =>
-                    DeleteMemberCubit(getIt<DeleteMemberRepo>()),
-              ),
-              BlocProvider(
-                create: (context) =>
-                    DeleteGroupCubit(getIt<SupabaseCrudServices>()),
-              ),
-            ],
-            child: ViewGroupMembers(groupData: groupData),
-          );
-        },
-      ),
-
-      //edit group
-      GoRoute(
-        path: Routes.editGroup,
-        builder: (context, state) {
-          final GroupChatParams groupData = state.extra as GroupChatParams;
-
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) =>
-                    EditGroupDataCubit(getIt<EditGroupDataRepo>()),
-              ),
-              BlocProvider(
-                create: (context) =>
-                    DeleteGroupCubit(getIt<SupabaseCrudServices>()),
-              ),
-              BlocProvider(create: (context) => SelectGroupMembersCubit()),
-              BlocProvider(create: (context) => PickImageCubit()),
-            ],
-            child: EditGroup(groupData: groupData),
-          );
-        },
-      ),
-
-      //Forget Password
-      ShellRoute(
-        builder: (context, state, child) {
-          return BlocProvider(
-            create: (context) => ResetPasswordCubit(getIt<AuthRepo>()),
-            child: child,
-          );
-        },
-        routes: [
-          GoRoute(
-            path: Routes.forgetPassword,
-            pageBuilder: (context, state) {
-              return CustomTransitionPage(
-                child: ForgotPasswordView(),
-                transitionsBuilder: (context, animation, _, child) =>
-                    FadeTransition(opacity: animation, child: child),
-                transitionDuration: const Duration(milliseconds: 400),
-              );
-            },
-          ),
-          GoRoute(
-            path: Routes.verifyOtp,
-            pageBuilder: (context, state) {
-              return CustomTransitionPage(
-                child: VerifyOtpView(),
-                transitionsBuilder: (context, animation, _, child) =>
-                    FadeTransition(opacity: animation, child: child),
-                transitionDuration: const Duration(milliseconds: 400),
-              );
-            },
-          ),
-
-          GoRoute(
-            path: Routes.setNewPassword,
-            pageBuilder: (context, state) {
-              return CustomTransitionPage(
-                child: SetNewPasswordView(),
-                transitionsBuilder: (context, animation, _, child) =>
-                    FadeTransition(opacity: animation, child: child),
-                transitionDuration: const Duration(milliseconds: 400),
-              );
-            },
-          ),
-        ],
-      ),
-
-      //signup verification
-      GoRoute(
-        path: Routes.signupVerification,
-        pageBuilder: (context, state) {
-          final SignupVerificationParams params = state.extra as SignupVerificationParams;
-          return CustomTransitionPage(
-            child: BlocProvider(
-              create: (context) =>
-                  SignupVerificationCubit(getIt<AuthRepo>(), email: params.email, name: params.name, image: params.image),
-              child: VerifySignupOtpView(),
-            ),
-            transitionsBuilder: (context, animation, _, child) =>
-                FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 400),
-          );
-        },
-      ),
-    ],
-  );
+              transitionsBuilder: (context, animation, _, child) =>
+                  FadeTransition(opacity: animation, child: child),
+              transitionDuration: const Duration(milliseconds: 400),
+            );
+          },
+        ),
+      ],
+    );
+  }
 }
