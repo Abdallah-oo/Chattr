@@ -1,9 +1,12 @@
 import 'package:chattr/chattr_app.dart';
+import 'package:chattr/core/routing/router.dart';
+import 'package:chattr/core/routing/routes.dart';
 import 'package:chattr/core/services/hive/hive_services.dart';
 import 'package:chattr/core/services/notification/notification_service.dart';
 import 'package:chattr/core/services/supabase/supabase_constants.dart';
 import 'package:chattr/core/utils/di/get_it.dart';
 import 'package:chattr/features/auth/data/models/user_model.dart';
+import 'package:chattr/features/auth/data/repos/auth_repo.dart';
 import 'package:chattr/features/group_chats/data/models/group_message_model.dart';
 import 'package:chattr/features/group_chats/data/models/group_model.dart';
 import 'package:chattr/features/private_chats/data/models/private_chat_model.dart';
@@ -23,10 +26,20 @@ void main() async {
 
   setUpGetIt();
   getIt<NotificationService>().init();
+   getIt<AuthRepo>().updateFCM();
+   final initialLocation = _resolveInitialLocation();
+   AppRouter.init(initialLocation: initialLocation);
 
-  runApp(const ChattrApp());
+  runApp(ChattrApp());
 }
-
+String _resolveInitialLocation() {
+  try {
+    final session = Supabase.instance.client.auth.currentSession;
+    return session != null ? Routes.root : Routes.login;
+  } catch (_) {
+    return Routes.login;
+  }
+}
 Future<void> _initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }

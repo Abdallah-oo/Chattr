@@ -52,15 +52,12 @@ class AuthRepoImpl implements AuthRepo {
 
   @override
   Future<Either<SupabaseError, User?>> signup({
-   
     required String email,
     required String password,
-   
   }) async {
     try {
       final response = await _authService.signUp(email, password);
-        final isExistingUnverifiedUser =
-          response.identities?.isEmpty ?? false;
+      final isExistingUnverifiedUser = response.identities?.isEmpty ?? false;
 
       if (isExistingUnverifiedUser) {
         // الإيميل موجود بالفعل ولسه مش confirmed
@@ -79,7 +76,7 @@ class AuthRepoImpl implements AuthRepo {
   Future<Either<SupabaseError, void>> verifySignupOtp({
     required String email,
     required String otp,
-     required String name,
+    required String name,
     required File image,
   }) async {
     try {
@@ -88,7 +85,7 @@ class AuthRepoImpl implements AuthRepo {
         token: otp,
         type: OtpType.signup,
       );
-       final myUuid = _authService.currentUser!.id;
+      final myUuid = _authService.currentUser!.id;
       final path = await _storage.uploadImage(
         file: image,
         storageFile: 'users_image',
@@ -112,8 +109,6 @@ class AuthRepoImpl implements AuthRepo {
       );
       await sendFCMToken(userData);
 
-
-
       return const Right(null);
     } catch (e) {
       return Left(SupabaseError(message: '$e'));
@@ -131,6 +126,7 @@ class AuthRepoImpl implements AuthRepo {
       return Left(SupabaseError(message: '$e'));
     }
   }
+
   @override
   Future<Either<SupabaseError, void>> sendPasswordResetOtp({
     required String email,
@@ -172,10 +168,6 @@ class AuthRepoImpl implements AuthRepo {
     }
   }
 
-
-
-  
-
   //?helper function
   Future<void> sendFCMToken(UserModel userData) async {
     final fcmToken = await syncFcmToken(userData);
@@ -188,5 +180,19 @@ class AuthRepoImpl implements AuthRepo {
     final notificationService = getIt<NotificationService>();
     final String? deviceToken = await notificationService.getDeviceToken();
     return deviceToken ?? '';
+  }
+
+  @override
+  Future<Either<SupabaseError, Unit>> updateFCM() async {
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId != null) {
+        final token = await _notificationService.getDeviceToken();
+        await _crud.updateUserFcmToken(userId: userId, token: token!);
+      }
+    } catch (e) {
+      Left(SupabaseError(message: '$e'));
+    }
+    return const Right(unit);
   }
 }

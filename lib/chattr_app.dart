@@ -1,10 +1,23 @@
 import 'package:chattr/core/routing/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-class ChattrApp extends StatelessWidget {
+class ChattrApp extends StatefulWidget {
   const ChattrApp({super.key});
+ 
 
-  // This widget is the root of your application.
+  @override
+  State<ChattrApp> createState() => _ChattrAppState();
+}
+
+class _ChattrAppState extends State<ChattrApp> {
+   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
+  }
   @override
   Widget build(BuildContext context) {
    return MaterialApp.router(
