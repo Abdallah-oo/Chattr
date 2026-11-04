@@ -26,12 +26,13 @@ void main() async {
 
   setUpGetIt();
   getIt<NotificationService>().init();
-   getIt<AuthRepo>().updateFCM();
-   final initialLocation = _resolveInitialLocation();
-   AppRouter.init(initialLocation: initialLocation);
+  getIt<AuthRepo>().updateFCM();
+  final initialLocation = _resolveInitialLocation();
+  AppRouter.init(initialLocation: initialLocation);
 
   runApp(ChattrApp());
 }
+
 String _resolveInitialLocation() {
   try {
     final session = Supabase.instance.client.auth.currentSession;
@@ -40,15 +41,13 @@ String _resolveInitialLocation() {
     return Routes.login;
   }
 }
+
 Future<void> _initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
 Future<void> _initSupabase() async {
-  await Supabase.initialize(
-    url: SupabaseConstants.url,
-    anonKey: SupabaseConstants.publishKey,
-  );
+  await Supabase.initialize(url: SupabaseConstants.url, anonKey: SupabaseConstants.publishKey);
 }
 
 Future<void> _initHive() async {
