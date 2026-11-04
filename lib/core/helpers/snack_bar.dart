@@ -21,7 +21,7 @@ class CustomSnackBar {
           if (icon != null) Icon(icon, color: Colors.white, size: 22),
           if (icon != null) const SizedBox(width: 10),
           Expanded(
-            child: CustomText(text: message, style: AppTextStyles.bodyMedium),
+            child: CustomText(text: message, style: AppTextStyles.bodyMedium,maxLines: 2,),
           ),
         ],
       ),

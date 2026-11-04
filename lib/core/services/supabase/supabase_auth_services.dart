@@ -13,10 +13,7 @@ class AuthService {
 
   Future<User> logIn(String email, String password) async {
     try {
-      final res = await _client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+      final res = await _client.auth.signInWithPassword(email: email, password: password);
       return res.user!;
     } catch (e) {
       throw _handleError(e);
@@ -50,8 +47,29 @@ class AuthService {
 
   User? get currentUser => _client.auth.currentUser;
   SupabaseError _handleError(Object e) {
+    if (e is AuthRetryableFetchException) {
+      final msg = e.message;
+
+      if (msg.contains(
+        '{"code":"unexpected_failure","message":"Error sending confirmation email"}',
+      )) {
+        return SupabaseError(
+          message:
+              'Error sending confirmation email, please enter an active email and try again later',
+        );
+      }
+    }
     if (e is AuthException) {
       final msg = e.message.toLowerCase();
+
+      if (msg.contains(
+        '{"code":"unexpected_failure","message":"Error sending confirmation email"}',
+      )) {
+        return SupabaseError(
+          message:
+              'Error sending confirmation email, please enter an active email and try again later',
+        );
+      }
 
       if (msg.contains('invalid login credentials')) {
         return SupabaseError(message: 'Email or password is incorrect');
