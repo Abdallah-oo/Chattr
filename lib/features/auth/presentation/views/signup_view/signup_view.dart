@@ -20,12 +20,14 @@ class SignupView extends StatelessWidget {
             CustomSnackBar.error(context, state.errorMessage ?? '');
           }
           if (state.status == AuthStatus.success) {
-           
+
             CustomSnackBar.success(
               context,
               'Successfully Registered , you must verify your email to continue',
             );
-            context.push(Routes.signupVerification, extra: SignupVerificationParams(email: state.email!, name: state.name!, image: state.image!));
+            // context.push(Routes.signupVerification, extra: SignupVerificationParams(email: state.email!, name: state.name!, image: state.image!));
+            // context.push(Routes.signupVerification, extra: SignupVerificationParams(email: state.email!, name: state.name!, image: state.image!));
+            context.push(Routes.login);
           }
         },
         child: Scaffold(body: SignupViewBody()),
