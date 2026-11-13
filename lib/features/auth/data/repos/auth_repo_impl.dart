@@ -54,18 +54,36 @@ class AuthRepoImpl implements AuthRepo {
   Future<Either<SupabaseError, User?>> signup({
     required String email,
     required String password,
+       required String name,
+    required File image,
   }) async {
     try {
       final response = await _authService.signUp(email, password);
-      final isExistingUnverifiedUser = response.identities?.isEmpty ?? false;
+      // final isExistingUnverifiedUser = response.identities?.isEmpty ?? false;
 
-      if (isExistingUnverifiedUser) {
-        // الإيميل موجود بالفعل ولسه مش confirmed
-        // بدل ما نسيب signUp() يفشل بصمت، نبعتله كود تاني بشكل صريح
-        await _client.auth.resend(type: OtpType.signup, email: email);
-        return const Right(null);
-      }
+      // if (isExistingUnverifiedUser) {
+      //   // الإيميل موجود بالفعل ولسه مش confirmed
+      //   // بدل ما نسيب signUp() يفشل بصمت، نبعتله كود تاني بشكل صريح
+      //   await _client.auth.resend(type: OtpType.signup, email: email);
+      //   return const Right(null);
+      // }
+            final myUuid = _authService.currentUser!.id;
+      final path = await _storage.uploadImage(file: image, storageFile: 'users_image');
+      final imagePath = _storage.getFileUrl(path: path, storageFile: 'users_image');
 
+      ///user data as user model
+      final UserModel userData = UserModel(
+        id: myUuid,
+        name: name,
+        email: email,
+        image: imagePath,
+        about: "",
+        createdAt: DateTime.now().toUtc(),
+        lastSeen: DateTime.now().toUtc(),
+        isOnLine: false,
+        myContacts: [],
+      );
+      await sendFCMToken(userData);
       return Right(response);
     } catch (e) {
       return Left(SupabaseError(message: '$e'));

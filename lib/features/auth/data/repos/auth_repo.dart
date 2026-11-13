@@ -15,6 +15,8 @@ abstract interface class AuthRepo {
 
     required String email,
     required String password,
+       required String name,
+    required File image,
 
   });
 //verify Signup Otp
@@ -28,7 +30,7 @@ abstract interface class AuthRepo {
 
   Future<Either<SupabaseError, void>> resendSignupOtp({required String email});
 
-  //forget password 
+  //forget password
 
  Future<Either<SupabaseError, void>> sendPasswordResetOtp({required String email});
 
@@ -39,5 +41,5 @@ abstract interface class AuthRepo {
 
   Future<Either<SupabaseError, void>> updatePassword({required String newPassword});
    Future<Either<SupabaseError, Unit>> updateFCM();
- 
+
 }
